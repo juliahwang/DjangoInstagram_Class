@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.conf import settings
+
 """
 member application 생성
     User모델 구현
@@ -15,17 +17,17 @@ user항목으로 참조
 
 class Post(models.Model):
     # Django가 제공하는 기본 User로 연결되도록 수정
-    author = models.ForeignKey(User)
-    photo = models.ImageField(blank=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    photo = models.ImageField(upload_to='post', blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     like_users = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         through='PostLike',
         related_name='like_posts',
         # User에서 받아온 컬럼이 2개 있으므로 이름을 바꿔준다.
     )
-    tags = models.ManyToManyField('Tag')
+    tags = models.ManyToManyField('Tag', blank=True)
 
     def add_comment(self, user, content):
         return self.comment_set.create(
@@ -48,18 +50,18 @@ class Post(models.Model):
 
 class PostLike(models.Model):
     post = models.ForeignKey(Post)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     created_date = models.DateTimeField(auto_now_add=True)
 
 
 class Comment(models.Model):
     post = models.ForeignKey(Post)
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
     content = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     like_users = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         through='CommentLike',
         related_name='like_comments',
     )
@@ -67,7 +69,7 @@ class Comment(models.Model):
 
 class CommentLike(models.Model):
     comment = models.ForeignKey(Comment)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     created_date = models.DateTimeField(auto_now_add=True)
 
 

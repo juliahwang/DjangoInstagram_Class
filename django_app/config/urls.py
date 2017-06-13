@@ -13,9 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.contrib import admin
+
+from config import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+
+    # post앱의 index뷰를 root url에 연결시킨다.
+    # url(r'^$', post_views.index),
+
+    # post앱의 urls.py모듈을 include시킨다.
+    url(r'^post/', include('post.urls')),
 ]
+urlpatterns += static(
+    prefix=settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)
+# static()은 리스트를 만든다. settings의 MEDIA_URL로 왔을 때
+# document_root는 settings의 MEDIA_ROOT에서 가져온다.
