@@ -1,17 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Detail</title>
-</head>
-<body>
+{% extends 'common/base.html' %}
+
+{% block content %}
     <div class="container">
         <span>{{ post.id }}</span>
         <img src="{{ post.photo.url }}" alt="">
+        <span>글작성자 : {{ post.author }}</span>
+        <div>좋아요 수 : {{ post.like_count }}</div>
+
+        {% if post.comment_set.all %}
+            {% for comment in post.comment_set.all %}
+            <div>댓글작성자 : {{ comment.author }}</div>
+            <div>내용 : {{ comment.content }}</div>
+            <div>작성일자 : {{ comment.created_date }}</div>
+            {% endfor %}
+        {% else %}
+        {% endif %}
         <p>{{ post.created_date }}</p>
         <p>{{ post.like_users }}</p>
         <p>{{ post.tags }}</p>
         <a href="{% url 'post_modify' post_pk=post.pk %}">글수정</a>
     </div>
-</body>
-</html>
+
+<!--Detail에 나와야 할 요소-->
+<!--사진-->
+<!--작성자-->
+<!--작성자를 팔로잉하고 있는지 여부 및 팔로우, 언팔버튼-->
+<!--좋아요 갯수-->
+<!--댓글목록-->
+    <!--댓글내용-->
+    <!--태그목록-->
+<!--댓글작성-->
+<!--좋아요 버튼-->
+{% endblock %}
+

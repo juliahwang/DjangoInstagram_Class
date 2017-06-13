@@ -1,21 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<a href="{% url 'post_create' %}">글쓰기</a>
+{% extends 'common/base.html' %}
+
+{% block content %}
+<a href="{% url 'post:post_create' %}">글쓰기</a>
 {% for post in posts %}
     <div>
-        <span>{{ post.id }}</span>
-        <span>{{ post.photo.url }}</span>
+        <!--<span>{{ post.id }}</span>-->
+        <!--<span>{{ post.photo.url }}</span>-->
         <img src="{{ post.photo.url }}" alt="">
         <p>{{ post.author }}</p>
-        <a href="{% url 'post_detail' post_pk=post.pk %}">
+        <a href="{% url 'post:post_detail' post_pk=post.pk %}">
             <p>{{ post.created_date }}</p>
         </a>
     </div>
 {% endfor %}
-</body>
-</html>
+{% endblock %}

@@ -86,12 +86,10 @@ def post_create(request):
     if request.method == 'GET':
         return render(request, 'post/post_create.html', context=context)
     else:
-        data = request.POST
-        print(data)
         photo = request.FILES['photoupload']
         author = User.objects.first()
         Post.objects.create(author=author, photo=photo)
-        return redirect('post_list')
+        return redirect('post:post_list')
 
 
 def post_modify(request, post_pk):
