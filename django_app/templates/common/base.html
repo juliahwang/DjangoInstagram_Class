@@ -1,11 +1,43 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/post.css' %}">
     <title>Instagram</title>
 </head>
 <body>
+  <div id="wrap">
+    <header class="top-header">
+      <nav>
+        <div class="nav-left nav-item">
+          <a href="">
+            <img src="{% static 'images/logo.png' %}" alt="">
+          </a>
+        </div>
+        <div class="nav-center nav-item">
+          <input type="text" placeholder="검색">
+        </div>
+        <div class="nav-right nav-item">
+          <a href="#">
+            <img src="{% static 'images/icon_explore.png' %}" alt="">
+          </a>
+          <a href="#">
+            <img src="{% static 'images/icon_heart.png' %}" alt="">
+          </a>
+          <a href="#">
+            <img src="{% static 'images/icon_profile.png' %}" alt="">
+          </a>
+        </div>
+      </nav>
+    </header>
+  </div>
+  <div class="container">
     {% block content %}
     {% endblock %}
+  </div>
 </body>
 </html>

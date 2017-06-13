@@ -55,7 +55,7 @@ def post_detail(request, post_pk):
 
     # request에 대해 response를 돌려줄 때는 HTTPResponse나 render함수 사용
     # template을 사용할 경우 render함수를 사용한다
-    # render함수는
+    # render함수는...
     #   django.template.loader.get_template함수와
     #   django.http.HTTPResponse함수를 축약해 놓은 shortcut
 
@@ -72,8 +72,8 @@ def post_detail(request, post_pk):
         'post': post,
     }
     # template에 인자로 주어진 context, request를 render함수로 string을 받아온다.
-    rendered_string = render(request=request, context=context)
-    return HTTPResponse('rendered_string')
+    rendered_string = template.render(request=request, context=context)
+    return HTTPResponse(rendered_string)
 
     # render를 사용하면 위의 과정을 함축하여 사용함과 동시에 post_detail.html으로 연결해준다.
     # return render(request, 'post/post_detail.html', context=context)

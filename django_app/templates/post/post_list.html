@@ -6,11 +6,12 @@
     <div>
         <!--<span>{{ post.id }}</span>-->
         <!--<span>{{ post.photo.url }}</span>-->
-        <img src="{{ post.photo.url }}" alt="">
-        <p>{{ post.author }}</p>
-        <a href="{% url 'post:post_detail' post_pk=post.pk %}">
-            <p>{{ post.created_date }}</p>
-        </a>
+        <!--<img src="{{ post.photo.url }}" alt="" width="640">-->
+        <!--<p>작성자 : {{ post.author }}</p>-->
+        <!--<a href="{% url 'post:post_detail' post_pk=post.pk %}">-->
+            <!--<p>작성일 : {{ post.created_date }}</p>-->
+        <!--</a>-->
+        {% include 'include/post.html' %}
     </div>
 {% endfor %}
 {% endblock %}
