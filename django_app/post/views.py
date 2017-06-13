@@ -1,5 +1,6 @@
 from http.client import HTTPResponse
 
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
@@ -30,7 +31,27 @@ def post_list(request):
 def post_detail(request, post_pk):
     # Model(DB)에서 post_pk에 해당하는 Post객체를 가져와 변수에 할당
     # ModelManager의 get 메서드를 통해 단 한 개의 객체만 가져온다.
-    post = get_object_or_404(Post, pk=post_pk)
+    #   https://docs.djangoproject.com/en/1.11/ref/models/querysets/#get
+
+    # post = get_object_or_404(Post, pk=post_pk)
+    # 가져오는 과정에서 예외처리하기
+    #   - get()은 오브젝트가 없거나(DoesNotExist)
+    #   - 여러 개의 오브젝트가 반환(MultipleObjectsReturns)될 때 에러가 난다
+
+    try:
+        post = Post.objects.get(pk=post_pk)
+    except Post.DoesNotExist as e:
+        # 1. 404에러를 띄워준다.
+        # return HttpResponseNotFound('Post Not Found. detail: {}'.format(e))
+
+        # 2. post_list view로 돌아간다.
+        # 2-1. redirect를 사용
+        #   https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#redirect
+        return redirect('post:post_list')
+        # 301 : redirect 코드를 돌려줄 때 가는 페이지
+        # redirect는 HttpResponseRedirect와 달리 모델, 뷰페이지를 가지고 페이지를 렌더링
+        # 2-2. HttpResponseRedirect
+        #   https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpResponseRedirect
 
     # request에 대해 response를 돌려줄 때는 HTTPResponse나 render함수 사용
     # template을 사용할 경우 render함수를 사용한다
@@ -42,6 +63,8 @@ def post_detail(request, post_pk):
     # Django가 템플릿을 검색할 수 있는 모든 디렉토리를 순회하며
     # 인자로 주어진 문자열 값과 일치하는 템플릿이 있는지 확인후
     # 템플릿을 template에 리턴 (django.template.backends.django.Template클래스형 객체)
+    # get_template() 메서드
+    #   https://docs.djangoproject.com/en/1.11/topics/templates/#django.template.loader.get_template
     template = loader.get_template('post/post_detail.html')
     # dict형 변수 context의 'post'키에 post(Post객체) 할당
     context = {
