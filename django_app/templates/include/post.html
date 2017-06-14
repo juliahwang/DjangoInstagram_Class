@@ -1,5 +1,5 @@
 <!-- 하나의 모듈 템플릿 구현 -->
-<article>
+<article class="post">
   <header>
     <div class="post-header-left">
       <img src="" alt="">
@@ -9,7 +9,7 @@
 
   </div>
   </header>
-  <div class="photo-container">
+  <div class="post-photo-container">
     <img src="{{ post.photo.url }}" alt="">
   </div>
   <div class="post-btn-container">
@@ -22,15 +22,18 @@
   </div>
   <p>좋아요 {{ post.like_count }}개</p>
   <div class="post-comment-container">
+    <!--post에 연결된 Comment목록을 for문으로 순화하며 아래 div.post_comment를 반복-->
+    {% for comment in post.comment_set.all %}
     <div class="post-comment">
-      <a href="#" class="comment-author"></a>
-      <span class="comment-content"></span>
-      <a href="#" class="comment-tag"></a>
-      <a href="#" class="comment-tag"></a>
+      <a href="#" class="comment-author">{{ comment.author }}</a>
+      <span class="comment-content">{{ comment.content }}</span>
       <a href="#" class="comment-tag"></a>
     </div>
+    {% endfor %}
   </div>
-  <p class="created">{{ post.created_date }}</p>
+  <a href="{% url 'post:post_detail' post_pk=post.pk %}">
+    <p class="created">{{ post.created_date }}</p>
+  </a>
   <form action="">
     <input type="text" placeholder="댓글달기">
   </form>

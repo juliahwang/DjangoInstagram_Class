@@ -2,8 +2,11 @@
 
 {% block content %}
 <a href="{% url 'post:post_create' %}">글쓰기</a>
+
 {% for post in posts %}
-    <div>
+    <p>{{ post.photo }}</p>
+    <p>{{ post.photo.url }}</p>
+    <!--<div>-->
         <!--<span>{{ post.id }}</span>-->
         <!--<span>{{ post.photo.url }}</span>-->
         <!--<img src="{{ post.photo.url }}" alt="" width="640">-->
@@ -11,7 +14,7 @@
         <!--<a href="{% url 'post:post_detail' post_pk=post.pk %}">-->
             <!--<p>작성일 : {{ post.created_date }}</p>-->
         <!--</a>-->
+    <!--</div>-->
         {% include 'include/post.html' %}
-    </div>
 {% endfor %}
 {% endblock %}
