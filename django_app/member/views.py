@@ -1,9 +1,11 @@
-from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 
 # Create your views here.
+User = get_user_model()
+
 
 def login(request):
     # member/login.html 생성
@@ -53,19 +55,22 @@ def signup(request):
     #   username, password1, password2를 받아
     #   이미 유저가 존재하는지 검사
     #   password1, 2가 일치하는지 검사
-    #   각각의 경우를 검사해서 틀릴경우 오류메세지 리턴
+    #   각각의 경우를 검사해서 틀릴경우 오류메세지 턴
     #   가입에 성공시 로그인시키고 post_list로 리다이렉트
-    username = request.POST['username']
-    password1 = request.POST['password1']
-    password2 = request.POST['password2']
-    user = authenticate(username=username, password=password1)
     if request.method == 'POST':
-        if user is None:
-            HttpResponse('User doesn\'t exist')
+        username = request.POST['username']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        if User.objects.filter(username=username).exists():
+            return HttpResponse('Username already exists')
         elif password1 != password2:
-            HttpResponse('You should type the exact same password!')
-        else:
-            django_login(request, user)
-            return redirect('post:post_list')
+            return HttpResponse('You should type the exact same password!')
+        # 위 두 경우가 아닌 경우 유저를 생성
+        user = User.objects.create_user(
+            username=username,
+            password=password1,
+        )
+        django_login(request, user)
+        return redirect('post:post_list')
     else:
         return render(request, 'member/signup.html')
