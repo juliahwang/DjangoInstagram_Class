@@ -34,6 +34,15 @@
         </div>
       </nav>
     </header>
+
+    <div class="test">
+      {% if request.user.is_authenticated %}
+        <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}">로그아웃</a></p>
+      {% else %}
+        <a href="{% url 'member:login' %}">로그인하세요.</a>
+      {% endif %}
+    </div>
+
   </div>
   <div class="container">
     {% block content %}
