@@ -3,7 +3,8 @@
 {% block content %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="file" value="{{ post.photo.url }}">
+        <img src="{{ post.photo.url }}" alt="">
+        <input type="file" name="file">
         <input type="submit">
     </form>
 {% endblock %}
