@@ -3,7 +3,7 @@ html, body {
   line-height: 18px;
 }
 
-input[type="text"] input[type=password] {
+input[type=text], input[type=password] {
   border: 1px solid #dbdbdb;
   border-radius: 3px;
   color: #262626;
@@ -14,9 +14,11 @@ input[type="text"] input[type=password] {
   background-color: #fafafa;
 }
 
-.test {
-  padding: 10px;
-  color: white;
-  background-color: lightblue;
-  font-size: 14px;
+a {
+  color: #262626;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }

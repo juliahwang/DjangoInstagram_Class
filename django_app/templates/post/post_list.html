@@ -15,6 +15,6 @@
             <!--<p>작성일 : {{ post.created_date }}</p>-->
         <!--</a>-->
     <!--</div>-->
-        {% include 'include/post.html' %}
+    {% include 'include/post.html' with type='list' %}
 {% endfor %}
 {% endblock %}

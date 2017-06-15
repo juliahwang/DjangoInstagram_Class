@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/common.css' %}">
     <link rel="stylesheet" href="{% static 'css/post.css' %}">
     <title>Instagram</title>
 </head>
@@ -33,15 +34,24 @@
           </a>
         </div>
       </nav>
+      <nav>
+        <div>
+          {% if request.user.is_authenticated %}
+          <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}" class="btn">로그아웃</a></p>
+          {% else %}
+          <a href="{% url 'member:login' %}" class="btn">로그인하세요.</a>
+          {% endif %}
+        </div>
+      </nav>
     </header>
 
-    <div class="test">
-      {% if request.user.is_authenticated %}
-        <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}">로그아웃</a></p>
-      {% else %}
-        <a href="{% url 'member:login' %}">로그인하세요.</a>
-      {% endif %}
-    </div>
+    <!--<div class="test">-->
+      <!--{% if request.user.is_authenticated %}-->
+        <!--<p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}">로그아웃</a></p>-->
+      <!--{% else %}-->
+        <!--<a href="{% url 'member:login' %}">로그인하세요.</a>-->
+      <!--{% endif %}-->
+    <!--</div>-->
 
   </div>
   <div class="container">

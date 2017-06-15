@@ -10,7 +10,14 @@
   </div>
   </header>
   <div class="post-photo-container">
-    <img src="{{ post.photo.url }}" alt="">
+    {% if type == 'list' %}
+      <a href="{% url 'post:post_detail' post_pk=post.pk %}">
+      <img src="{{ post.photo.url }}" alt="">
+    {% else %}
+        <img src="{{ post.photo.url }}" alt="">    
+    {% endif %}    
+
+    </a>
   </div>
   <div class="post-btn-container">
     <a href="#">
@@ -31,9 +38,7 @@
     </div>
     {% endfor %}
   </div>
-  <a href="{% url 'post:post_detail' post_pk=post.pk %}">
-    <p class="created">{{ post.created_date }}</p>
-  </a>
+  <p class="created">{{ post.created_date }}</p>
   <form action="">
     <input type="text" placeholder="댓글달기">
   </form>

@@ -124,18 +124,19 @@ def post_create(request):
 
 
 def post_modify(request, post_pk):
+    pass
     # 수정
-    post = Post.objects.get(pk=post_pk)
-    if request.method == 'GET':
-        context = {
-            'photo': post.photo,
-        }
-        return render(request, 'post/post_modify.html', context)
-    else:
-        photo = request.FILES['file']
-        post.photo = photo
-        post.save()
-        return redirect('post:post_detail', post_pk=post.pk)
+    # post = Post.objects.get(pk=post_pk)
+    # if request.method == 'GET':
+    #     context = {
+    #         'photo': post.photo,
+    #     }
+    #     return render(request, 'post/post_modify.html', context)
+    # else:
+    #     photo = request.FILES['file']
+    #     post.photo = photo
+    #     post.save()
+    #     return redirect('post:post_detail', post_pk=post.pk)
 
 
 def post_delete(request, post_pk):
