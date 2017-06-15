@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
+from .forms import LoginForm
+
 
 # Create your views here.
 User = get_user_model()
@@ -19,20 +21,32 @@ def login(request):
 
     # POST요청이 왔을 경우
     if request.method == 'POST':
+        ### Form클래스 미사용시
         # 요청받은 POST데이터에서 username, password키가 가진 값들을
         # username, password 변수에 할당(문자열)
-        username = request.POST['username']
-        password = request.POST['password']
+        # username = request.POST['username']
+        # password = request.POST['password']
         # authenticate함수를 사용해서 User객체를 얻어 user에 할당
         # 인증에 실패할 경우 user변수에는 None이 할당됨
-        user = authenticate(request, username=username, password=password)
+        # user = authenticate(request, username=username, password=password)
         # user변수가 None이 아닐경우 (정상적으로 인증되어 User객체를 얻은 경우)
-        if user is not None:
+        # if user is not None:
             # 장고의 session을 활용해 이번 request와 user데이터로 login()한 후
             # post_list페이지로 리다이렉트한다.
+            # django_login(request, user)
+            # return redirect('post:post_list')
+        # user가 인증에 실패한 경우 다음 HttpResponse를 반환
+
+        ### Form클래스 사용시
+        #   Bound form 생성
+        form = LoginForm(data=request.POST)
+        # Bound form의 유효성검사를 하여 받아온 데이터가 조건에 부합하는지 검사. 유효할 경우 True반환
+        if form.is_valid():
+            # 데이터가 유효할 경우 cleaned_data에 데이터가 들어간다.
+            # 그 데이터를 빼내와서 user객체에 user의 value값을 할당.
+            user = form.cleaned_data['user']
             django_login(request, user)
             return redirect('post:post_list')
-        # user가 인증에 실패한 경우 다음 HttpResponse를 반환
         else:
             return HttpResponse('Login Invalid!')
     # request.method가 GET이면 login 템플릿을 보여준다.
@@ -41,7 +55,12 @@ def login(request):
         # 아닐경우 login.html을 render해서 리턴
         if request.user.is_authenticated:
             return redirect('post:post_list')
-        return render(request, 'member/login.html')
+        # LoginForm 인스턴스를 생성해서 context에 넘김
+        form = LoginForm()
+        context = {
+            'form': form,
+        }
+        return render(request, 'member/login.html', context)
 
 
 def logout(request):

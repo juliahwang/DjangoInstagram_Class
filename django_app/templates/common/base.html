@@ -39,7 +39,7 @@
           {% if request.user.is_authenticated %}
           <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}" class="btn">로그아웃</a></p>
           {% else %}
-          <a href="{% url 'member:login' %}" class="btn">로그인하세요.</a>
+          <a href="{% url 'member:login' %}" class="btn">로그인</a>
           {% endif %}
         </div>
       </nav>

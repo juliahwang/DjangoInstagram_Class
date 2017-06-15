@@ -4,8 +4,10 @@
 <div>
     <form action="" method="post">
         {% csrf_token %}
-        <input type="text" name="username">
-        <input type="password" name="password">
+        {{ form }}
+        <!--<input type="text" name="username">-->
+        <!--<input type="password" name="password">-->
+        <!--폼에서 버튼은 만들어 주지 않는다.-->
         <button type="submit">로그인</button>
     </form>
 </div>
