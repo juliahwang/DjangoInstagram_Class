@@ -46,3 +46,26 @@ def logout(request):
     # 로그아웃되면 post_list로 redirect
     django_logout(request)
     return redirect('post:post_list')
+
+
+def signup(request):
+    # member/signup.html을 사용
+    #   username, password1, password2를 받아
+    #   이미 유저가 존재하는지 검사
+    #   password1, 2가 일치하는지 검사
+    #   각각의 경우를 검사해서 틀릴경우 오류메세지 리턴
+    #   가입에 성공시 로그인시키고 post_list로 리다이렉트
+    username = request.POST['username']
+    password1 = request.POST['password1']
+    password2 = request.POST['password2']
+    user = authenticate(username=username, password=password1)
+    if request.method == 'POST':
+        if user is None:
+            HttpResponse('User doesn\'t exist')
+        elif password1 != password2:
+            HttpResponse('You should type the exact same password!')
+        else:
+            django_login(request, user)
+            return redirect('post:post_list')
+    else:
+        return render(request, 'member/signup.html')
