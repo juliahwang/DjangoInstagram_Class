@@ -2,6 +2,7 @@
 
 {% block content %}
 <a href="{% url 'member:login' %}">로그인</a>
+<a href="{% url 'post:post_list' %}">로그아웃</a>
 <a href="{% url 'post:post_create' %}">글쓰기</a>
 
 {% for post in posts %}
