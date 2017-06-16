@@ -52,16 +52,17 @@ def login(request):
     # request.method가 GET이면 login 템플릿을 보여준다.
     else:
         # 만약 이미 로그인된 상태일 경우에는 post_list로 redirect
-        # 아닐경우 login.html을 render해서 리턴
         if request.user.is_authenticated:
             return redirect('post:post_list')
+        # 아닐 경우 login.html을 render해서 리턴
         # LoginForm 인스턴스를 생성해서 context에 넘김
         form = LoginForm()
         context = {
             'form': form,
         }
-        return render(request, 'member/login.html', context)
-
+        # render시 context에는 LoginForm 클래스형 form 객체가 포함되어 있다.
+        # return render(request, 'member/login.html', context)
+        return render(request, 'common/base.html', context)
 
 def logout(request):
     # 로그아웃되면 post_list로 redirect
