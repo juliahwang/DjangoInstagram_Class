@@ -14,6 +14,13 @@ class SignupForm(forms.Form):
             }
         )
     )
+    nickname = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': '유일해야 합니다.'
+            }
+        )
+    )
     password1 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
@@ -41,6 +48,15 @@ class SignupForm(forms.Form):
             )
         return username
 
+    def clean_nickname(self):
+        nickname = self.cleaned_data.get('nickname')
+        if nickname and User.objects.filter(nickname=nickname).exists():
+            raise forms.ValidationError(
+                'Nickname already exists'
+            )
+        return nickname
+
+
     def clean_password2(self):
         # password2필드로 필드클린 메서드를 쓰는 이유는 password1이
         # 입력되어 있어야 하기 때문.
@@ -60,8 +76,11 @@ class SignupForm(forms.Form):
         # username과 password1이 있다는 가정하에 사용하므로 get()을 사용하지 않는다.
         username = self.cleaned_data['username']
         password = self.cleaned_data['password1']
+        nickname = self.cleaned_data['nickname']
         user = User.objects.create_user(
             username=username,
+            nickname=nickname,
             password=password,
         )
         return user
+

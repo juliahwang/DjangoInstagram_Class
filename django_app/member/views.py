@@ -99,9 +99,6 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password1 = form.cleaned_data['password1']
-            password2 = form.cleaned_data['password2']
             user = form.create_user()
             django_login(request, user)
             return redirect('post:post_list')

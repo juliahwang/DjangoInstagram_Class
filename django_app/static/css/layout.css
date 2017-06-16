@@ -42,8 +42,7 @@ header.top-header > nav:nth-child(1) .nav-center {
 }
 
 header.top-header > nav:nth-child(1) .container > .content {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 10px;
 }
 
 header.top-header > nav:nth-child(1) .nav-right {

@@ -16,4 +16,5 @@ class User(AbstractUser):
     )
 
     def __str__(self):
-        return self.nickname
+        # nickname이 None일 경우에는 username 반환
+        return self.nickname or self.username

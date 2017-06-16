@@ -3,10 +3,12 @@
 {% block content %}
     <!-- 파일을 전송하기 위해서는 enctype 속성을 multipart/form-data로 지정해준다.-->
     <!--action: 어디로 / method: 어떤 방식으로-->
-    <form action="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="file">
-        <input type="text" name="comment" placeholder="댓글">
-        <button type="submit">등록</button>
-    </form>
+    <div class="content">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!--field_set에서 공통적으로 form을 사용, 명시적으로 form=현재페이지의 변수명을 써준다-->
+            {% include 'include/field_set.html' with form=form %}
+            <button type="submit">등록</button>
+        </form>
+    </div>
 {% endblock %}
