@@ -37,6 +37,7 @@ class LoginForm(forms.Form):
         # 기본 clean()을 오버라이드할 것이므로 super()로 불러온다.
         cleaned_data = super().clean()
         # username, password를 가져와 로컬변수에 할당
+        # 해당 인스턴스에서 가져와서 사용할 수도 있다
         username = cleaned_data.get('username')
         password = cleaned_data.get('password')
 
@@ -55,6 +56,7 @@ class LoginForm(forms.Form):
         # ValidationError를 발생시킨다.
         else:
             raise forms.ValidationError(
+                # 해당 메서드는 반드시 유효한 파이썬 객체를 리턴한다.
                 'Login credentials not valid'
             )
         # clean()을 오버라이드 했으므로 기존 리턴값 적어준다.

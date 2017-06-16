@@ -41,6 +41,11 @@ header.top-header > nav:nth-child(1) .nav-center {
   }
 }
 
+header.top-header > nav:nth-child(1) .container > .content {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 header.top-header > nav:nth-child(1) .nav-right {
   width: 150px;
   float: right;
@@ -61,6 +66,20 @@ header.top-header > nav:nth-child(2) > div {
   margin: 0 auto;
 }
 
+form.form-inline-login {
+  font-size: 11px;
+}
+
+form.form-inline-login label {
+  margin-right: 5px;
+}
+
+form.form-inline-login input {
+  padding: 5px 8px;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
 .container {
   max-width: 1010px;
   margin: 0 auto;
@@ -71,9 +90,4 @@ header.top-header > nav:nth-child(2) > div {
   .container {
     padding-top: 0px;
   }
-}
-
-.signup-box {
-  border-color: rgba(0, 0, 0, 0.0975);
-  text-align: left;
 }

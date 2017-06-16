@@ -1,9 +1,7 @@
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout, get_user_model
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
-from .forms import LoginForm
-
+from .forms import LoginForm, SignupForm
 
 # Create your views here.
 User = get_user_model()
@@ -31,10 +29,10 @@ def login(request):
         # user = authenticate(request, username=username, password=password)
         # user변수가 None이 아닐경우 (정상적으로 인증되어 User객체를 얻은 경우)
         # if user is not None:
-            # 장고의 session을 활용해 이번 request와 user데이터로 login()한 후
-            # post_list페이지로 리다이렉트한다.
-            # django_login(request, user)
-            # return redirect('post:post_list')
+        # 장고의 session을 활용해 이번 request와 user데이터로 login()한 후
+        # post_list페이지로 리다이렉트한다.
+        # django_login(request, user)
+        # return redirect('post:post_list')
         # user가 인증에 실패한 경우 다음 HttpResponse를 반환
 
         ### Form클래스 사용시
@@ -64,6 +62,7 @@ def login(request):
         # return render(request, 'member/login.html', context)
         return render(request, 'common/base.html', context)
 
+
 def logout(request):
     # 로그아웃되면 post_list로 redirect
     django_logout(request)
@@ -77,20 +76,44 @@ def signup(request):
     #   password1, 2가 일치하는지 검사
     #   각각의 경우를 검사해서 틀릴경우 오류메세지 턴
     #   가입에 성공시 로그인시키고 post_list로 리다이렉트
+    ### 폼을 사용하지 않는 경우
+    # if request.method == 'POST':
+    #     username = request.POST['username']
+    #     password1 = request.POST['password1']
+    #     password2 = request.POST['password2']
+    #     if User.objects.filter(username=username).exists():
+    #         return HttpResponse('Username already exists')
+    #     elif password1 != password2:
+    #         return HttpResponse('You should type the exact same password!')
+    #     # 위 두 경우가 아닌 경우 유저를 생성
+    #     user = User.objects.create_user(
+    #         username=username,
+    #         password=password1,
+    #     )
+    #     django_login(request, user)
+    #     return redirect('post:post_list')
+    # else:
+    #     return render(request, 'member/signup.html')
+
+    ### form 사용시
     if request.method == 'POST':
-        username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        if User.objects.filter(username=username).exists():
-            return HttpResponse('Username already exists')
-        elif password1 != password2:
-            return HttpResponse('You should type the exact same password!')
-        # 위 두 경우가 아닌 경우 유저를 생성
-        user = User.objects.create_user(
-            username=username,
-            password=password1,
-        )
-        django_login(request, user)
-        return redirect('post:post_list')
-    else:
-        return render(request, 'member/signup.html')
+        form = SignupForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password1 = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+            user = form.create_user()
+            django_login(request, user)
+            return redirect('post:post_list')
+        else:
+            context = {
+                'form': form,
+            }
+            return render(request, 'member/signup.html', context)
+    # GET요청이 올 때는 form을 보여주고 clean_username()에서 정의한
+    # ValidationError까지(발생할 경우) 포함하여 출력해줄 수 있다.
+    form = SignupForm()
+    context = {
+        'form': form,
+    }
+    return render(request, 'member/signup.html', context)
