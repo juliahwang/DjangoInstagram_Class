@@ -29,6 +29,10 @@ class Post(models.Model):
     )
     tags = models.ManyToManyField('Tag', blank=True)
 
+    # 내림차순 정렬
+    class Meta:
+        ordering = ['-pk', ]
+
     def add_comment(self, user, content):
         return self.comment_set.create(
             author=user,

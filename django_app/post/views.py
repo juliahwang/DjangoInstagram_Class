@@ -1,16 +1,13 @@
 from http.client import HTTPResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
-# Create your views here.
 from django.template import loader
 from django.urls import reverse
-
 from .forms import PostForm
-from post.models import Post
+from post.models import Post, Comment
 
+# Create your views here.
 # 자동으로 장고에서 인증에 사용하는 User모델클래스를 리턴
 User = get_user_model()
 
@@ -96,9 +93,18 @@ def post_create(request):
     if request.method == 'POST':
         form = PostForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
+            # Form 안에서 comment저장을 하기 위해 author를 인수로 할당하고
+            # 원래 author를 추가로 저장하기 위해 설정했던 commit=False는 삭제
+            post = form.save(author=request.user)
             post.save()
+
+            # PostForm에 comment가 전달되었을 경우 Comment객체 생성
+            # comment_string = form.cleaned_data['comment']
+            # if comment_string:
+            #     post.comment_set.create(
+            #         author=request.user,
+            #         content=comment_string,
+            #     )
             return redirect('post:post_detail', post_pk=post.pk)
         else:
             context = {
@@ -115,18 +121,6 @@ def post_create(request):
 
 def post_modify(request, post_pk):
     pass
-    # 수정
-    # post = Post.objects.get(pk=post_pk)
-    # if request.method == 'GET':
-    #     context = {
-    #         'photo': post.photo,
-    #     }
-    #     return render(request, 'post/post_modify.html', context)
-    # else:
-    #     photo = request.FILES['file']
-    #     post.photo = photo
-    #     post.save()
-    #     return redirect('post:post_detail', post_pk=post.pk)
 
 
 def post_delete(request, post_pk):
