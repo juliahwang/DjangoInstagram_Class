@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.urls import reverse
+
+from post.decorators import post_owner
 from .forms import PostForm
 from post.models import Post, Comment
 
@@ -118,6 +120,8 @@ def post_create(request):
     return render(request, 'post/post_create.html', context)
 
 
+@post_owner
+@login_required
 def post_modify(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if request.method == "POST":
