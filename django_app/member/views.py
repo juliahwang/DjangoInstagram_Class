@@ -44,9 +44,13 @@ def login(request):
             # 그 데이터를 빼내와서 user객체에 user의 value값을 할당.
             user = form.cleaned_data['user']
             django_login(request, user)
+            # url에서 GET요청을 할 때 로그인 후에도 원래 있던 페이지주소(next값)를 기억하여
+            # 그 쪽으로 보내준다. next_값이 없을 경우에는 원래 랜딩페이지인 post_list로 간다.
+            next_ = request.GET.get('next')
+            if next_:
+                return redirect(next_)
             return redirect('post:post_list')
-        else:
-            return HttpResponse('Login Invalid!')
+
     # request.method가 GET이면 login 템플릿을 보여준다.
     else:
         # 만약 이미 로그인된 상태일 경우에는 post_list로 redirect
@@ -55,12 +59,12 @@ def login(request):
         # 아닐 경우 login.html을 render해서 리턴
         # LoginForm 인스턴스를 생성해서 context에 넘김
         form = LoginForm()
-        context = {
-            'form': form,
-        }
-        # render시 context에는 LoginForm 클래스형 form 객체가 포함되어 있다.
-        # return render(request, 'member/login.html', context)
-        return render(request, 'common/base.html', context)
+    context = {
+        'form': form,
+    }
+    # render시 context에는 LoginForm 클래스형 form 객체가 포함되어 있다.
+    # return render(request, 'member/login.html', context)
+    return render(request, 'member/login.html', context)
 
 
 def logout(request):

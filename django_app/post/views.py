@@ -101,7 +101,11 @@ def post_create(request):
             post.save()
             return redirect('post:post_detail', post_pk=post.pk)
         else:
-            form = PostForm()
+            context = {
+                'form': form,
+            }
+            return render(request, 'post/post_create.html', context)
+    form = PostForm()
     context = {
         'form': form,
     }

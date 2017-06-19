@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate, login as django_login
 
 from member.models import User
@@ -37,7 +36,7 @@ class SignupForm(forms.Form):
     )
 
     def clean_username(self):
-        # 폼을 사용하지 않을 때 만들어준 유효성검사를 clean_<필드명>()메서드로 정의.
+        # 폼을 사용하지 않을 때 뷰에서 만들어준 유효성검사를 clean_<필드명>()메서드로 정의.
         # if User.objects.filter(username=username).exists():
         #   return HttpResponse('Username already exists')
         username = self.cleaned_data.get('username')

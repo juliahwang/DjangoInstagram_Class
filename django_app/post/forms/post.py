@@ -11,7 +11,7 @@ class PostForm(forms.ModelForm):
 
     comment = forms.CharField(
         # comment는 필수가 아님.
-        required= False,
+        required=False,
         widget=forms.TextInput
     )
 
@@ -21,3 +21,4 @@ class PostForm(forms.ModelForm):
             'photo',
             'comment',
         )
+

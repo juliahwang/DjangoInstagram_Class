@@ -17,16 +17,22 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from config import settings
+from . import settings, views
 
+app_name = 'config'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    
+    # 로컬호스트 기본 주소를 post/ 페이지로 리다이렉트시키기
+    url(r'^$', views.default, name='default'),
+    # class뷰를 사용하여 view를 생성하지 않고 바로 리다이렉트 시킬 수 있다.
+    # url(r'^$', RedirectView.as_view(pattern_name='post:post_list')),
 
     # post앱의 index뷰를 root url에 연결시킨다.
     # url(r'^$', post_views.index),
 
     # post앱의 urls.py모듈을 include시킨다.
-    url(r'^post/', include('post.urls')),
+    url(r'^post/', include('post.urls'), name='post_list_default'),
     url(r'^member/', include('member.urls')),
 ]
 urlpatterns += static(
