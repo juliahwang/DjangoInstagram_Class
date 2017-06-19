@@ -21,6 +21,8 @@ class Post(models.Model):
     photo = models.ImageField(upload_to='post', blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    # related_name='+'로 지정할 경우 역참조를 생성하지 않는다
+    my_comment = models.OneToOneField('comment', related_name='+', blank=True, null=True)
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='PostLike',

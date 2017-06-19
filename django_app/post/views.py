@@ -43,20 +43,20 @@ def post_detail(request, post_pk):
     # try:
     #     post = Post.objects.get(pk=post_pk)
     # except Post.DoesNotExist as e:
-        # 1. 404에러를 띄워준다.
-        # return HttpResponseNotFound('Post Not Found. detail: {}'.format(e))
+    # 1. 404에러를 띄워준다.
+    # return HttpResponseNotFound('Post Not Found. detail: {}'.format(e))
 
-        # 2. post_list view로 돌아간다.
-        # 2-1. redirect를 사용
-        #   https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#redirect
-        # return redirect('post:post_list')
-        # 301 : redirect 코드를 돌려줄 때 가는 페이지
-        # redirect는 HttpResponseRedirect와 달리 모델, 뷰페이지를 가지고 페이지를 렌더링
-        # 2-2. HttpResponseRedirect
-        #   https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpResponseRedirect
-        # 템플릿에서 reverse함수로 url을 조합, 함수를 써주는 것과 위의 redirect()는 결국 같은 기능을 한다.
-        # url = reverse('post:post_list')
-        # return HttpResponseRedirect(url)
+    # 2. post_list view로 돌아간다.
+    # 2-1. redirect를 사용
+    #   https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#redirect
+    # return redirect('post:post_list')
+    # 301 : redirect 코드를 돌려줄 때 가는 페이지
+    # redirect는 HttpResponseRedirect와 달리 모델, 뷰페이지를 가지고 페이지를 렌더링
+    # 2-2. HttpResponseRedirect
+    #   https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpResponseRedirect
+    # 템플릿에서 reverse함수로 url을 조합, 함수를 써주는 것과 위의 redirect()는 결국 같은 기능을 한다.
+    # url = reverse('post:post_list')
+    # return HttpResponseRedirect(url)
 
     # request에 대해 response를 돌려줄 때는 HttpResponse나 render함수 사용
     # template을 사용할 경우 render함수를 사용한다
@@ -116,7 +116,6 @@ def post_create(request):
         'form': form,
     }
     return render(request, 'post/post_create.html', context)
-
 
 
 def post_modify(request, post_pk):
