@@ -1,5 +1,4 @@
 from django import forms
-
 from ..models import Post, Comment
 
 
@@ -8,6 +7,9 @@ class PostForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # 장고문서 보기
         self.fields['photo'].required = True
+        # comment수정시 my_comment필드와 comment 연결
+        if self.instance.my_comment:
+            self.fields['comment'].initial = self.instance.my_comment
 
     comment = forms.CharField(
         # comment는 필수가 아님.
@@ -25,6 +27,7 @@ class PostForm(forms.ModelForm):
     # save메서드로 comment필드를 사용해 Comment객체를 생성, DB에 저장
     def save(self, **kwargs):
         # save 할 때 문제가 되는 author를 위해 kwargs로 받은 다음 따로 변수에 지정해준다.
+        # commit은 기본으로 True로 주어져있으므로, 주어지지않으면 True로 가져온다.
         commit = kwargs.get('commit', True)
         # author를 딕셔너리에서 빼버린다. 기본값은 None
         author = kwargs.pop('author', None)
@@ -44,6 +47,7 @@ class PostForm(forms.ModelForm):
             if instance.my_comment:
                 instance.my_comment.content = comment_string
                 instance.my_comment.save()
+            # my_comment가 없는 경우 Comment객체를 생성해서 my_comment O2O field에 할당
             else:
                 instance.my_comment = Comment.objects.create(
                     post=instance,

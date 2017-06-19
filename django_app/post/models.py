@@ -53,6 +53,10 @@ class Post(models.Model):
         # 자신을 like하고 있는 user수 리턴
         return self.like_users.count()
 
+    def liked_username(self):
+        # 해당 post를 좋아하는 user들의 이름 나열
+        return '{}'.format(', '.join([i.username for i in self.like_users.all()]))
+
 
 class PostLike(models.Model):
     post = models.ForeignKey(Post)
