@@ -42,7 +42,7 @@
     <div class="post-comment-container">
       {% if post.my_comment %}
         <!--include한 post_comment내에서 'comment'라는 이름으로 쓸 변수에는 post.my_comment 할당-->
-        {% include 'include/post_comment.html' with comment=post.my_comment %}
+        {% include 'include/post_comment.html' with comment=post.my_comment style='red' %}
       {% endif %}
 
       <!--post에 연결된 Comment목록을 for문으로 순화하며 아래 div.post_comment를 반복-->

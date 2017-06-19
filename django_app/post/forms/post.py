@@ -1,6 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from member.models import User
 from ..models import Post, Comment
 
+User = get_user_model()
 
 class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -32,9 +35,17 @@ class PostForm(forms.ModelForm):
         # author를 딕셔너리에서 빼버린다. 기본값은 None
         author = kwargs.pop('author', None)
 
+        # self.instance.pk가 존재하지 않거나(새로 생성하거나)
+        # author가 User인스턴스일 경우
+        #
+        if not self.instance.pk or isinstance(author, User):
+            self.instance.author = author
+
+
         # BaseModelForm에서 Meta클래스의 model을 받아 instance를 생성하므로
         # 생성된 instance의 author에 원하는 author를 넣어주면 된다
-        self.instance.author = author
+        #
+        # self.instance.author = author
         instance = super().save(**kwargs)
 
         # commit인수가 True이며 comment필드가 채워져 있을 경우 Comment 생성 로직을 진행
@@ -51,8 +62,8 @@ class PostForm(forms.ModelForm):
             else:
                 instance.my_comment = Comment.objects.create(
                     post=instance,
-                    author=author,
-                    defaults={'content': comment_string}
+                    author=instance.author,
+                    content=comment_string,
             )
             instance.save()
         # ModelForm의 save()에서 반환해야하는 model의 instance 리턴
