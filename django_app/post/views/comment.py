@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from post.decorators import comment_owner
 from post.forms import CommentForm
-from post.models import Post
+from post.models import Post, Comment
 
 __all__ = (
     'comment_create',
@@ -44,17 +45,38 @@ def comment_create(request, post_pk):
     # GET 요청일 때 보여줄 페이지는 필요없음
 
 
-def comment_modify(request, post_pk):
-    # 코멘트 수정
+@comment_owner
+@require_POST
+@login_required
+def comment_modify(request, comment_pk):
+    # 코멘트 수정창을 만들어 기존의 내용을 채워넣을 수 있게 해야한다.
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    next_ = request.GET.get['next']
     if request.method == "POST":
-        form = CommentForm(data=request.POST)
+        form = CommentForm(request.POST, instance=comment)
         form.save()
+        if next_:
+            return redirect(next_)
+        # Form을 이용해 객체를 update시킴 (data에 포함된 부분만 update됨)
+        # next_ = request.GET[]
+        return redirect('post:post_detail', post_pk=comment.post.pk)
     else:
-        form = CommentForm()
+        form = CommentForm(instance=comment)
+    context = {
+        'form': form,
+    }
+    return render(request, 'post/comment_modify.html', context)
 
 
-def comment_delete(request, post_pk, comment_pk):
-    pass
+@comment_owner
+@require_POST
+@login_required
+def comment_delete(request, comment_pk):
+    # next_ = request.GET.get['next']
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    post = comment.post
+    comment.delete()
+    return redirect('post:post_detail', post_pk=post.pk)
 
 
 def post_anyway(request):

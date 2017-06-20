@@ -1,7 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import User
+import re
 
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 
 """
 member application 생성
@@ -29,7 +30,6 @@ class Post(models.Model):
         related_name='like_posts',
         # User에서 받아온 컬럼이 2개 있으므로 이름을 바꿔준다.
     )
-    tags = models.ManyToManyField('Tag', blank=True)
 
     # 내림차순 정렬
     class Meta:
@@ -41,13 +41,13 @@ class Post(models.Model):
             content=content,
         )
 
-    def add_tag(self, tag_name):
-        # tags에 tag매개변수로 전달된 값str을
-        # name으로 갖는 Tag 객체를 (이미 존재하면) 가져오고 없으면 생성하여 자신의 tags에 추가
-        # 이 경우에는 get_or_create()를 사용!
-        tag, tag_created = Tag.objects.get_or_create(name=tag_name)
-        if not self.tags.filter(name=tag_name).exists():
-            self.tags.add(tag)
+    # def add_tag(self, tag_name):
+    #     # tags에 tag매개변수로 전달된 값str을
+    #     # name으로 갖는 Tag 객체를 (이미 존재하면) 가져오고 없으면 생성하여 자신의 tags에 추가
+    #     # 이 경우에는 get_or_create()를 사용!
+    #     tag, tag_created = Tag.objects.get_or_create(name=tag_name)
+    #     if not self.tags.filter(name=tag_name).exists():
+    #         self.tags.add(tag)
 
     def like_count(self):
         # 자신을 like하고 있는 user수 리턴
@@ -68,6 +68,8 @@ class Comment(models.Model):
     post = models.ForeignKey(Post)
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     content = models.TextField()
+    html_content = models.TextField(blank=True)
+    tags = models.ManyToManyField('Tag')
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     like_users = models.ManyToManyField(
@@ -75,6 +77,35 @@ class Comment(models.Model):
         through='CommentLike',
         related_name='like_comments',
     )
+
+    def save(self, *args, **kwargs):
+        # save 메서드가 너무 커지므로 따로 메서드를 정의해주고(html생성) 실행한다.
+        self.make_html_content_and_add_tags()
+        super().save(*args, **kwargs)
+
+    def make_html_content_and_add_tags(self):
+        # 해시태그에 해당하는 정규표현식
+        p = re.compile(r'(#\w+)')
+        # findall 메서드로 해시태그의 문자열을 가져옴
+        tag_name_list = re.findall(p, self.content)
+        # 기존 content(Comment내용)을 변수에 할당
+        ori_content = self.content
+        # 문자열을 순회하며
+        for tag_name in tag_name_list:
+            # Tag객체를 가져오거나 없으면 생성하여 tag(#)를 생략해준다.
+            tag, _ = Tag.objects.get_or_create(name=tag_name.replace('#', ''))
+            # 기존 content의 내용 변경
+            ori_content = ori_content.replace(
+                tag_name,
+                '<a href=\'#\' class="hash-tag">{}</a>\n'.format(
+                    tag_name
+                )
+            )
+            # content에 포함된 Tag목록을 자신의 tags 필드에 추가 - 계속 수정/추가 가능
+            if not self.tags.filter(pk=tag.pk).exists():
+                self.tags.add(tag)
+        # 편집이 완료된 문자열을 html_content에 저장 - html 탬플릿태그로 출력가능
+        self.html_content = ori_content
 
 
 class CommentLike(models.Model):

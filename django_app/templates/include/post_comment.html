@@ -1,5 +1,13 @@
 <div class="post-comment" {% if style == "red" %}style="color: red;"{% endif %}>
     <a href="#" class="comment-author">{{ comment.author }}</a>
-    <span class="comment-content">{{ comment.content }}</span>
+    {# django html escape 문서 참고 - safe #}
+    <p class="comment-content">{{ comment.html_content|safe }}</p> {# html_content가 보이도록 바꿔줌 #}
     <a href="#" class="comment-tag"></a>
+    {% if request.user == comment.author %}
+        <a href="{% url 'post:comment_modify' comment_pk=comment.pk %}?next={{ request.path }}#post-{{ comment.post.pk }}" class="btn btn-xs">수정</a>
+        <form action="{% url 'post:comment_delete' comment_pk=comment.pk %}?next={{ request.path }}#post-{{ comment.post.pk }}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-xs">삭제</button>
+        </form>
+    {% endif %}
 </div>
