@@ -1,5 +1,8 @@
 <!-- 하나의 모듈 템플릿 구현 -->
 {% load static %}
+<div class="post-create-btn">
+    <a href="{% url 'post:post_create' %}" class="btn">글쓰기</a>
+</div>
 <article class="post">
   <header>
     <div class="post-header-left">
@@ -33,7 +36,7 @@
     <div class="btn-right">
       {% if user == post.author %}
       <a href="{% url 'post:post_modify' post_pk=post.pk %}" class="btn">수정하기</a>
-      <a href="" class="btn">삭제하기</a>
+      </form>
       {% endif %}
     </div>
   </div>
@@ -58,7 +61,13 @@
     </div>
   <p class="created">{{ post.created_date }}</p>
   <form action="">
-    <input class="input-comment" type="text" placeholder="댓글달기">
+    <!--<input class="input-comment" type="text" placeholder="댓글을 입력하세요">-->
+  </form>
+  <form action="{% url 'post:comment_create' post_pk=post.pk %}" method="post">
+        {% csrf_token %}
+        <!--<button type="submit" class="btn">댓글달기</button>-->
+        {{ comment_form.content }}
+        {# .content를 붙이면 필드명이 사라진다 #}
   </form>
 </div>
 </article>

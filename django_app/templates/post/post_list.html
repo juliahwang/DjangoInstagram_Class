@@ -1,11 +1,7 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
-
 {% for post in posts %}
-    <div>
-        <a href="{% url 'post:post_create' %}" class="btn">글쓰기</a>
-    </div>
     <!--<p>{{ post.photo }}</p>-->
     <!--<p>{{ post.photo.url }}</p>-->
     <!--<div>-->

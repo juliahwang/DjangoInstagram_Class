@@ -24,9 +24,13 @@
   width: 100%;
 }
 
-p.help {
+.field-wrapper p.help {
   font-size: 10px;
   color: #ccc;
   margin-top: 2px;
   margin-bottom: 0;
+}
+
+form.form-inline {
+  display: inline-block;
 }

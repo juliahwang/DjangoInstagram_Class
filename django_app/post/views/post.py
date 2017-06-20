@@ -1,13 +1,21 @@
 from http.client import HTTPResponse
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template import loader
-from django.urls import reverse
 
 from post.decorators import post_owner
-from .forms import PostForm
-from post.models import Post, Comment
+from post.forms import CommentForm
+from post.forms import PostForm
+from post.models import Post
+
+__all__ = (
+    'post_list',
+    'post_create',
+    'post_detail',
+    'post_modify',
+    'post_delete',
+)
 
 # Create your views here.
 # 자동으로 장고에서 인증에 사용하는 User모델클래스를 리턴
@@ -23,7 +31,9 @@ def post_list(request):
     # 모든 Post목록을 'post'라는 key로 context에 담아 return render처리
     posts = Post.objects.all()
     context = {
-        'posts': posts
+        'posts': posts,
+        # post마다 CommentForm을 1개씩 가지도록 전달.
+        'comment_form': CommentForm(),
     }
     return render(
         request,
@@ -136,25 +146,18 @@ def post_modify(request, post_pk):
         return render(request, 'post/post_modify.html', context)
 
 
+@post_owner
+@login_required
 def post_delete(request, post_pk):
+    # post_pk에 해당하는 Post에 대한 delete요청만을 받음
+    # 처리 완료후에는 post_list페이지로 redirect
+    post = get_object_or_404(Post, pk=post_pk)
     if request.method == "POST":
-        post = Post.objects.get(pk=post_pk)
         post.delete()
         return redirect('post:post_list')
-    return HTTPResponse('you have no authority to delete')
-    # post_pk에 해당하는 Post에 대한 delete요청만을 받음
-    # 처리완료 후에는 post_list페이지로 redirect
-
-
-def post_anyway(request):
-    return redirect('post:post_anyway')
-
-
-def comment_create(request, post_pk):
-    # POST 요청을 받아 Comment객체를 생성 후 post_detail페이지로 redirect
-    pass
-
-
-def comment_modify(request, post_pk):
-    # 코멘트 수정
-    pass
+    else:
+        # Delete확인창 띄워주기
+        context = {
+            'post': post,
+        }
+        return render(request, 'post/post_delete.html', context)

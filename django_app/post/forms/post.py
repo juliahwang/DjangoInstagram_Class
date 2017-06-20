@@ -5,6 +5,7 @@ from ..models import Post, Comment
 
 User = get_user_model()
 
+
 class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -12,7 +13,7 @@ class PostForm(forms.ModelForm):
         self.fields['photo'].required = True
         # comment수정시 my_comment필드와 comment 연결
         if self.instance.my_comment:
-            self.fields['comment'].initial = self.instance.my_comment
+            self.fields['comment'].initial = self.instance.my_comment.content
 
     comment = forms.CharField(
         # comment는 필수가 아님.
@@ -37,16 +38,14 @@ class PostForm(forms.ModelForm):
 
         # self.instance.pk가 존재하지 않거나(새로 생성하거나)
         # author가 User인스턴스일 경우
-        #
         if not self.instance.pk or isinstance(author, User):
             self.instance.author = author
 
-
         # BaseModelForm에서 Meta클래스의 model을 받아 instance를 생성하므로
         # 생성된 instance의 author에 원하는 author를 넣어주면 된다
-        #
         # self.instance.author = author
-        instance = super().save(**kwargs)
+        # comment등록을 위한 기본 instance를 anything으로 재정의
+        anything = super().save(**kwargs)
 
         # commit인수가 True이며 comment필드가 채워져 있을 경우 Comment 생성 로직을 진행
         # 해당 comment는 instance의 my_comment필드를 채워준다.
@@ -55,16 +54,16 @@ class PostForm(forms.ModelForm):
         comment_string = self.cleaned_data['comment']
         # comment가 채워져있을 경우
         if commit and comment_string:
-            if instance.my_comment:
-                instance.my_comment.content = comment_string
-                instance.my_comment.save()
+            if anything.my_comment:
+                anything.my_comment.content = comment_string
+                anything.my_comment.save()
             # my_comment가 없는 경우 Comment객체를 생성해서 my_comment O2O field에 할당
             else:
-                instance.my_comment = Comment.objects.create(
-                    post=instance,
-                    author=instance.author,
+                anything.my_comment = Comment.objects.create(
+                    post=anything,
+                    author=anything.author,
                     content=comment_string,
             )
-            instance.save()
+            anything.save()
         # ModelForm의 save()에서 반환해야하는 model의 instance 리턴
-        return instance
+        return anything
