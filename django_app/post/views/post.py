@@ -136,7 +136,8 @@ def post_modify(request, post_pk):
     post = Post.objects.get(pk=post_pk)
     if request.method == "POST":
         form = PostForm(data=request.POST, files=request.FILES, instance=post)
-        form.save()
+        if form.is_valid():
+            form.save()
         return redirect('post:post_detail', post_pk=post.pk)
     else:
         form = PostForm(instance=post)

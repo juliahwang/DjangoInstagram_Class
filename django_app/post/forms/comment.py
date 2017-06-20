@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from member.models import User
 from ..models import Comment
@@ -21,29 +22,14 @@ class CommentForm(forms.ModelForm):
             )
         }
 
-    content = forms.CharField(
-        required=True,
-        widget=forms.TextInput
-    )
-
-    def save(self, **kwargs):
-        commit = kwargs.get('commit', True)
-        author = kwargs.pop('author', None)
-
-        if not self.instance.pk or isinstance(author, User):
-            self.instance.author = author
-
-        instance = super().save(**kwargs)
-
-        comment_string = self.cleaned_data['content']
-        if commit and comment_string:
-            if instance.content:
-                instance.content = comment_string
-                instance.save()
-            else:
-                instance.content = Comment.objects.create(
-                    author=instance.author,
-                    content=comment_string,
-                )
-            instance.save()
-        return instance
+    def clean_content(self):
+        """
+        content필드에 대한 유효성 검증 메서드
+        :return: 3자 이하의 텍스트를 입력하면 에러메세지 표출
+        """
+        content = self.cleaned_data['content']
+        if len(content) < 3:
+            raise ValidationError(
+                '댓글은 최소 3자이상이어야 합니다'
+            )
+        return content
