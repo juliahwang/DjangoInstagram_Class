@@ -28,7 +28,7 @@ class CommentForm(forms.ModelForm):
         :return: 3자 이하의 텍스트를 입력하면 에러메세지 표출
         """
         content = self.cleaned_data['content']
-        if len(content) < 3:
+        if len(content) < 2:
             raise ValidationError(
                 '댓글은 최소 3자이상이어야 합니다'
             )

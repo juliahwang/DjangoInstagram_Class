@@ -60,9 +60,9 @@
       {% endfor %}
     </div>
   <p class="created">{{ post.created_date }}</p>
-  <form action="">
-    <!--<input class="input-comment" type="text" placeholder="댓글을 입력하세요">-->
-  </form>
+{#  <form action="">#}
+{#    <!--<input class="input-comment" type="text" placeholder="댓글을 입력하세요">-->#}
+{#  </form>#}
   {# http request 문서 참고 - request.path는 request 안에 들어있는 순수 url주소 #}
   <form action="{% url 'post:comment_create' post_pk=post.pk %}?next={{ request.path }}#post-{{ post.pk }}" method="post">
         {% csrf_token %}

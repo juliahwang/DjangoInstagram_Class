@@ -93,6 +93,11 @@ form.form-inline-login input {
   text-align: center;
 }
 
+.pagination-btn {
+  margin-top: 20px;
+  vertical-align: middle;
+}
+
 .container {
   max-width: 1010px;
   margin: 0 auto;

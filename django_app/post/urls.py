@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^(?P<post_pk>\d+)/comment/create/$', views.comment_create, name='comment_create'),
     url(r'^comment/(?P<comment_pk>\d+)/modify/$', views.comment_modify, name='comment_modify'),
     url(r'^comment/(?P<comment_pk>\d+)/delete/$', views.comment_delete, name='comment_delete'),
+    url(r'^tag/(?P<tag_name>\w+)/$', views.hashtag_post_list, name='hashtag_post_list'),
     url(r'.*/$', views.post_anyway, name='post_anyway'),
 ]

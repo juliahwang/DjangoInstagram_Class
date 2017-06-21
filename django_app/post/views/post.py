@@ -2,19 +2,22 @@ from http.client import HTTPResponse
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, get_object_or_404, redirect
 
 from post.decorators import post_owner
 from post.forms import CommentForm
 from post.forms import PostForm
-from post.models import Post
+from post.models import Post, Tag
 
 __all__ = (
+    'post_list_original',
     'post_list',
     'post_create',
     'post_detail',
     'post_modify',
     'post_delete',
+    'hashtag_post_list',
 )
 
 # Create your views here.
@@ -27,7 +30,7 @@ def index(request):
     return HTTPResponse('Hello, world!')
 
 
-def post_list(request):
+def post_list_original(request):
     # 모든 Post목록을 'post'라는 key로 context에 담아 return render처리
     posts = Post.objects.all()
     context = {
@@ -40,6 +43,33 @@ def post_list(request):
         'post/post_list.html',
         context=context,
     )
+
+
+# 페이지네이션
+def post_list(request):
+    # 아직 평가되지 않은 전체 쿼리셋 들고오기
+    all_posts = Post.objects.all()
+    # Paginator를 사용하여 모든 포스트를 5개씩 페이지 분할한 후 paginator변수에 할당
+    paginator = Paginator(all_posts, 5)
+
+    # GET 파라미터에서 page의 value값을 page_num 변수에 할당
+    page_num = request.GET.get('page')
+    # paginator의 페이지번호가 page_num인 포스트들을 posts변수에 할당
+    try:
+        posts = paginator.page(page_num)
+    # page_num이 숫자형이 아닐 경우에는 1번째 페이지의 posts을 가져옴
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    # 해당페이지번호가 없을 경우에는 paginator의 마지막 페이지의 posts을 가져옴
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    # 예외처리해준 posts 변수와 comment_form을 렌더링시키기 위해 딕셔너리 삽입
+    context = {
+        'posts': posts,
+        'comment_form': CommentForm(),
+    }
+    # post_list 템플릿에 만들어준 context dict를 넣어 렌더링함.
+    return render(request, 'post/post_list.html', context)
 
 
 def post_detail(request, post_pk):
@@ -58,16 +88,16 @@ def post_detail(request, post_pk):
     # 1. 404에러를 띄워준다.
     # return HttpResponseNotFound('Post Not Found. detail: {}'.format(e))
 
-    # 2. post_list view로 돌아간다.
+    # 2. post_list_original view로 돌아간다.
     # 2-1. redirect를 사용
     #   https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#redirect
-    # return redirect('post:post_list')
+    # return redirect('post:post_list_original')
     # 301 : redirect 코드를 돌려줄 때 가는 페이지
     # redirect는 HttpResponseRedirect와 달리 모델, 뷰페이지를 가지고 페이지를 렌더링
     # 2-2. HttpResponseRedirect
     #   https://docs.djangoproject.com/en/1.11/ref/request-response/#django.http.HttpResponseRedirect
     # 템플릿에서 reverse함수로 url을 조합, 함수를 써주는 것과 위의 redirect()는 결국 같은 기능을 한다.
-    # url = reverse('post:post_list')
+    # url = reverse('post:post_list_original')
     # return HttpResponseRedirect(url)
 
     # request에 대해 response를 돌려줄 때는 HttpResponse나 render함수 사용
@@ -155,10 +185,26 @@ def post_delete(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
     if request.method == "POST":
         post.delete()
-        return redirect('post:post_list')
+        return redirect('post:post_list_original')
     else:
         # Delete확인창 띄워주기
         context = {
             'post': post,
         }
         return render(request, 'post/post_delete.html', context)
+
+
+def hashtag_post_list(request, tag_name):
+    # 1. template 생성
+    #   post/hashtag_post_list.html
+    #   특정 tag_name이 해당
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = Post.objects.filter(my_comment__tags=tag)
+    posts_count = posts.count()
+
+    context = {
+        'tag': tag,
+        'posts': posts,
+        'posts_count': posts_count
+    }
+    return render(request, 'post/hashtag_post_list.html', context)

@@ -3,6 +3,7 @@ import re
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 """
 member application 생성
@@ -79,6 +80,10 @@ class Comment(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        # 새로생성할 경우에는 일단 데이터를 저장한다.
+        if not self.pk:
+            super().save(*args, **kwargs)
+        # 아니면 해시태그 생성 메서드를 실행하고 저장한다.
         # save 메서드가 너무 커지므로 따로 메서드를 정의해주고(html생성) 실행한다.
         self.make_html_content_and_add_tags()
         super().save(*args, **kwargs)
@@ -95,17 +100,17 @@ class Comment(models.Model):
             # Tag객체를 가져오거나 없으면 생성하여 tag(#)를 생략해준다.
             tag, _ = Tag.objects.get_or_create(name=tag_name.replace('#', ''))
             # 기존 content의 내용 변경
-            ori_content = ori_content.replace(
-                tag_name,
-                '<a href=\'#\' class="hash-tag">{}</a>\n'.format(
-                    tag_name
-                )
+            change_tag = '<a href="{url}" class="hash-tag">{tag_name}</a>'.format(
+                url=reverse('post:hashtag_post_list', kwargs={'tag_name': tag_name.replace('#', '')}),
+                tag_name=tag_name,
             )
-            # content에 포함된 Tag목록을 자신의 tags 필드에 추가 - 계속 수정/추가 가능
+            ori_content = re.sub(r'{}(?![<\w])'.format(tag_name), change_tag, ori_content, count=1)
+            # content에 포함된 Tag목록을 자신의 tags필드에 추가
             if not self.tags.filter(pk=tag.pk).exists():
                 self.tags.add(tag)
-        # 편집이 완료된 문자열을 html_content에 저장 - html 탬플릿태그로 출력가능
+        # 편집이 완료된 문자열을 html_content에 저장
         self.html_content = ori_content
+        super().save(update_fields=['html_content'])
 
 
 class CommentLike(models.Model):

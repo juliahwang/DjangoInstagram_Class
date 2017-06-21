@@ -32,7 +32,7 @@ def login(request):
         # 장고의 session을 활용해 이번 request와 user데이터로 login()한 후
         # post_list페이지로 리다이렉트한다.
         # django_login(request, user)
-        # return redirect('post:post_list')
+        # return redirect('post:post_list_original')
         # user가 인증에 실패한 경우 다음 HttpResponse를 반환
 
         ### Form클래스 사용시
@@ -49,13 +49,13 @@ def login(request):
             next_ = request.GET.get('next')
             if next_:
                 return redirect(next_)
-            return redirect('post:post_list')
+            return redirect('post:post_list_original')
 
     # request.method가 GET이면 login 템플릿을 보여준다.
     else:
         # 만약 이미 로그인된 상태일 경우에는 post_list로 redirect
         if request.user.is_authenticated:
-            return redirect('post:post_list')
+            return redirect('post:post_list_original')
         # 아닐 경우 login.html을 render해서 리턴
         # LoginForm 인스턴스를 생성해서 context에 넘김
         form = LoginForm()
@@ -70,7 +70,7 @@ def login(request):
 def logout(request):
     # 로그아웃되면 post_list로 redirect
     django_logout(request)
-    return redirect('post:post_list')
+    return redirect('post:post_list_original')
 
 
 def signup(request):
@@ -95,7 +95,7 @@ def signup(request):
     #         password=password1,
     #     )
     #     django_login(request, user)
-    #     return redirect('post:post_list')
+    #     return redirect('post:post_list_original')
     # else:
     #     return render(request, 'member/signup.html')
 
@@ -105,7 +105,7 @@ def signup(request):
         if form.is_valid():
             user = form.create_user()
             django_login(request, user)
-            return redirect('post:post_list')
+            return redirect('post:post_list_original')
         else:
             context = {
                 'form': form,

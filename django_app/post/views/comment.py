@@ -14,6 +14,7 @@ __all__ = (
     'post_anyway',
 )
 
+
 # POST요청만 보내는 함수임을 데코레이터로 알려준다.(조건문사용안해도 됨)
 @require_POST
 @login_required
@@ -46,17 +47,13 @@ def comment_create(request, post_pk):
 
 
 @comment_owner
-@require_POST
 @login_required
 def comment_modify(request, comment_pk):
     # 코멘트 수정창을 만들어 기존의 내용을 채워넣을 수 있게 해야한다.
     comment = get_object_or_404(Comment, pk=comment_pk)
-    next_ = request.GET.get['next']
     if request.method == "POST":
-        form = CommentForm(request.POST, instance=comment)
+        form = CommentForm(data=request.POST, instance=comment)
         form.save()
-        if next_:
-            return redirect(next_)
         # Form을 이용해 객체를 update시킴 (data에 포함된 부분만 update됨)
         # next_ = request.GET[]
         return redirect('post:post_detail', post_pk=comment.post.pk)

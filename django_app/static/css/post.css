@@ -58,3 +58,8 @@ article.post .post-bottom input.input-comment {
   width: 100%;
   box-sizing: border-box;
 }
+
+.pagination-btn {
+  margin-top: 20px;
+  vertical-align: middle;
+}
