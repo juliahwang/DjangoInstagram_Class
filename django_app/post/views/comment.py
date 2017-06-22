@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
-
+from utils.templatetags.custom_tags import query_string
 from post.decorators import comment_owner
 from post.forms import CommentForm
 from post.models import Post, Comment
@@ -53,10 +53,11 @@ def comment_modify(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if request.method == "POST":
         form = CommentForm(data=request.POST, instance=comment)
-        form.save()
-        # Form을 이용해 객체를 update시킴 (data에 포함된 부분만 update됨)
-        # next_ = request.GET[]
-        return redirect('post:post_detail', post_pk=comment.post.pk)
+        if form.is_valid():
+            form.save()
+            # Form을 이용해 객체를 update시킴 (data에 포함된 부분만 update됨)
+            # next_ = request.GET[]
+            return redirect('post:post_list')
     else:
         form = CommentForm(instance=comment)
     context = {

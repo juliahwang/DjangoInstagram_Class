@@ -1,21 +1,8 @@
 {% extends 'common/base.html' %}
+{% load custom_tags %}
 
-{% block content %}
-{% for post in posts %}
-{#    <!--<p>{{ post.photo }}</p>-->#}
-{#    <!--<p>{{ post.photo.url }}</p>-->#}
-{#    <!--<div>-->#}
-{#        <!--<span>{{ post.id }}</span>-->#}
-{#        <!--<span>{{ post.photo.url }}</span>-->#}
-{#        <!--<img src="{{ post.photo.url }}" alt="" width="640">-->#}
-{#        <!--<p>작성자 : {{ post.author }}</p>-->#}
-{#        <!--<a href="{% url 'post:post_detail' post_pk=post.pk %}">-->#}
-{#            <!--<p>작성일 : {{ post.created_date }}</p>-->#}
-{#        <!--</a>-->#}
-    <!--</div>-->
-    {% include 'include/post.html' with type='list' %}
-{% endfor %}
 
+<div class="test">{{ request.GET|query_string }}</div>
 
 {# 페이지네이션 버튼 추가 #}
 {# 이전페이지로 가는 링크 & 첫페이지로 가는 링크는 첫페이지에서는 보이지 않는다. #}
@@ -36,4 +23,19 @@
     {#    <p class="test">다음 페이지: {{ posts.next_page_number }}</p>#}
 {% endif %}
 </div>
+{% block content %}
+{% for post in posts %}
+{#    <!--<p>{{ post.photo }}</p>-->#}
+{#    <!--<p>{{ post.photo.url }}</p>-->#}
+{#    <!--<div>-->#}
+{#        <!--<span>{{ post.id }}</span>-->#}
+{#        <!--<span>{{ post.photo.url }}</span>-->#}
+{#        <!--<img src="{{ post.photo.url }}" alt="" width="640">-->#}
+{#        <!--<p>작성자 : {{ post.author }}</p>-->#}
+{#        <!--<a href="{% url 'post:post_detail' post_pk=post.pk %}">-->#}
+{#            <!--<p>작성일 : {{ post.created_date }}</p>-->#}
+{#        <!--</a>-->#}
+    <!--</div>-->
+    {% include 'include/post.html' with type='list' %}
+{% endfor %}
 {% endblock %}

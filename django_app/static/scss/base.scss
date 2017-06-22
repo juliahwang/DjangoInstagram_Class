@@ -17,12 +17,9 @@ input[type=text], input[type=password] {
   background-color: #fafafa;
 }
 
-
-
 a {
   color: $color-text-common;
   text-decoration: none;
-
   &:hover {
     text-decoration: underline;
   }

@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth import authenticate, login as django_login
 
 from member.models import User
 
@@ -55,7 +54,6 @@ class SignupForm(forms.Form):
             )
         return nickname
 
-
     def clean_password2(self):
         # password2필드로 필드클린 메서드를 쓰는 이유는 password1이
         # 입력되어 있어야 하기 때문.
@@ -82,4 +80,3 @@ class SignupForm(forms.Form):
             password=password,
         )
         return user
-

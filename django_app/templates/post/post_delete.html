@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="content">
-    <img src="{{ post.photo.url }}" alt="">
+    <img src="{{ post.photo.url }}" alt="" width="200">
     <p>Post ({{ post.photo.url }})를 삭제하시겠습니까?</p>
-    <form action="{% url 'post:post_delete' post_pk=post.pk %}" method="POST">
+    <form action="{% url 'post:post_delete' post_pk=post.pk %}" class='form-inline' method="POST">
         {% csrf_token %}
         <button type="submit" class="btn">삭제</button>
     </form>

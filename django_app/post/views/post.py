@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_POST
 
 from post.decorators import post_owner
 from post.forms import CommentForm
@@ -17,6 +18,7 @@ __all__ = (
     'post_detail',
     'post_modify',
     'post_delete',
+    'post_like_toggle',
     'hashtag_post_list',
 )
 
@@ -192,6 +194,44 @@ def post_delete(request, post_pk):
             'post': post,
         }
         return render(request, 'post/post_delete.html', context)
+
+
+@require_POST
+@login_required
+def post_like_toggle(request, post_pk):
+    # like, unlike 뷰를 따로 만들기 비효율적이므로 toggle로 만들어준다.
+    post = get_object_or_404(Post, pk=post_pk)
+    # M2M필드가 중간자 모델을 거치지 않을 경우
+    # if request.user in post.like_users:
+    #    post.like_users.add(request.user)
+
+    # 중간자 모델을 사용할 경우(PostLike)
+    # get_or_create를 사용해서 현재 Post와 request.user에 해당하는 PostLike인스턴스 가져옴
+    post_like, post_like_created = post.postlike_set.get_or_create(user=request.user)
+
+    # 3. 이후 created여부에 따라 해당 PostLike인스턴스를 삭제 또는 그냥 넘어가기
+    # post_like_created가 get_or_create를 통해 새로 PostLike가 만들어졌는지
+    # 아니면 기존에 있었는지 여부에 따라 행동 부여
+    if not post_like_created:
+        # 기존에 PostLike가 있었다면 삭제해준다.
+        post_like.delete()
+
+    # 4. 리턴주소는 next가 주어질경우 next로, 없으면 post_detail로
+    # next_ = request.GET.get('next')
+    # if next_:
+    #     return redirect(next_)
+    return redirect('post:post_detail', post_pk=post.pk)
+
+
+def follow_toggle(request, user):
+    me = request.user
+    following, follow_created = me.follow_relation.get_or_create(to_user=user)
+    if request.method == "POST":
+        if not follow_created:
+            following.delete()
+        return redirect('post:post_list')
+    else:
+        return render(request, 'post/post_list.html')
 
 
 def hashtag_post_list(request, tag_name):

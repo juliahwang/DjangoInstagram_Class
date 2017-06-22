@@ -83,6 +83,8 @@ INSTALLED_APPS = [
     # 앱 추가
     'post',
     'member',
+    # 커스텀태그제작용 패키지 추가
+    'utils',
 ]
 
 MIDDLEWARE = [

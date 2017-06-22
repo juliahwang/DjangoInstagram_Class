@@ -1,8 +1,7 @@
 html, body {
   font-size: 14px;
   line-height: 18px;
-  background-color: #fafafa;
-}
+  background-color: #fafafa; }
 
 input[type=text], input[type=password] {
   border: 1px solid #dbdbdb;
@@ -12,17 +11,13 @@ input[type=text], input[type=password] {
   outline: none;
   height: 25px;
   padding: 6px 10px;
-  background-color: #fafafa;
-}
+  background-color: #fafafa; }
 
 a {
   color: #262626;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
+  text-decoration: none; }
+  a:hover {
+    text-decoration: underline; }
 
 ul, ol {
   margin: 0;

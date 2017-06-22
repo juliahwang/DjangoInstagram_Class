@@ -31,12 +31,20 @@ article.post {
     .post-btn-container {
       .btn-left {
         float: left;
+        border: none;
+        outline: 0;
+        -webkit-appearance:none;
       }
 
       .btn-right {
         float: right;
       }
     }
+    .post-like-mention {
+      clear: both;
+      margin-bottom: 10px;
+    }
+
     p.comment {
       clear: both;
       margin-bottom: 6px;
