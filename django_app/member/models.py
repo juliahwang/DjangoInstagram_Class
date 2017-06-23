@@ -67,11 +67,11 @@ class User(AbstractUser):
 
     def is_follow(self, user):
         # 해당 user를 내가 follow하고 있는지 bool 여부 반환
-        status = Relation.objects.filter(from_user=self, to_user=user).exists()
-        if status:
-            return '{}가 {}를 팔로우하고 있습니다.'.format(self, user)
-        else:
-            return '{}가 {}를 팔로우하지 않았습니다.'.format(self, user)
+        return Relation.objects.filter(from_user=self, to_user=user).exists()
+        # if status:
+        #     return '{}가 {}를 팔로우하고 있습니다.'.format(self, user)
+        # else:
+        #     return '{}가 {}를 팔로우하지 않았습니다.'.format(self, user)
 
     def is_follower(self, user):
         # 해당 user가 나를 follow하고 있는지 bool 여부 반환
@@ -83,8 +83,8 @@ class User(AbstractUser):
             raise ValueError
         following, follow_created = self.follow_relation.get_or_create(to_user=user)
         if not follow_created:
-            Relation.objects.filter(from_user=self, to_user=user).delete()
-            # relation.delete()
+            # Relation.objects.filter(from_user=self, to_user=user).delete()
+            following.delete()
         return following
 
     @property
@@ -93,13 +93,13 @@ class User(AbstractUser):
         relation = self.follow_relation.all()
         # 아래 코드는 위와 같다. 하지만 위쪽이 더 의미가 맞음.
         # relation = Relation.objects.filter(from_user=self)
-        return User.objects.filter(pk__in=relation.values(self))
+        return User.objects.filter(pk__in=relation.values('to_user'))
 
     @property
     def followers(self):
         # 나를 follow중인 User QuerySet
         relation = self.follow_relation.all()
-        return User.objects.filter(pk__in=relation.values(self))
+        return User.objects.filter(pk__in=relation.values('from_user'))
 
 
 class Relation(models.Model):

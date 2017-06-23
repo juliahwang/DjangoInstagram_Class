@@ -6,37 +6,43 @@
   cursor: pointer;
   text-decoration: none;
   font-size: 11px;
-  height: 30px;
-}
-
-.btn .btn-xs {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 2px;
-}
+  height: 30px; }
+  .btn .btn-lg {
+    font-size: 14px;
+    padding: 9px 18px; }
+  .btn .btn-xs {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    line-height: 1.6; }
+  .btn .btn-block {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center; }
+  .btn .btn-primary {
+    background-color: #3897f0;
+    color: white; }
 
 .field-wrapper ul.errors {
   font-size: 13px;
   color: red;
   font-weight: bold;
-  padding-left: 5px;
-}
-
+  padding-left: 5px; }
 .field-wrapper label {
-  font-size: 11px;
-}
-
+  font-size: 11px; }
 .field-wrapper input[type=text], .field-wrapper input[type=password] {
-  width: 100%;
-}
-
+  width: 100%; }
 .field-wrapper p.help {
   font-size: 10px;
   color: #ccc;
   margin-top: 2px;
-  margin-bottom: 0;
-}
+  margin-bottom: 0; }
 
 form.form-inline {
-  display: inline-block;
-}
+  display: inline-block; }
+
+a.hash-tag {
+  color: #44709c; }
+
+/*# sourceMappingURL=common.css.map */

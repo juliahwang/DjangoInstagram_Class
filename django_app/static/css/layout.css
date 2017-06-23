@@ -1,111 +1,38 @@
-header.top-header {
-  background-color: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.0975);
-}
+/*
+Error: Invalid US-ASCII character "\xEA"
+        on line 2 of layout.scss
 
-header.top-header > nav:nth-child(1) {
-  max-width: 1010px;
-  margin: 0 auto;
-  height: 83px;
-  padding: 0 10px;
-}
+1: 
+2: // 기본레이아웃 선언
+3: @import 'variables';
+4: $header-height: 83px;
+5: $screen-tablet: 700px;
+6: 
+7: 
 
-header.top-header > nav:nth-child(1) .nav-item {
-  height: 83px;
-  line-height: 83px;
-}
-
-header.top-header > nav:nth-child(1) .nav-item > a {
-  height: 83px;
-  line-height: 83px;
-  display: inline-block;
-}
-
-header.top-header > nav:nth-child(1) .nav-item > a > img {
-  vertical-align: middle;
-}
-
-header.top-header > nav:nth-child(1) .nav-left {
-  float: left;
-  margin-right: 20px;
-  width: 182px;
-}
-
-header.top-header > nav:nth-child(1) .nav-center {
-  width: 147px;
-  float: left;
-}
-
-@media screen and (max-width: 700px) {
-  header.top-header > nav:nth-child(1) .nav-center {
-    display: none;
-  }
-}
-
-header.top-header > nav:nth-child(1) .container > .content {
-  padding: 10px;
-}
-
-header.top-header > nav:nth-child(1) .nav-right {
-  width: 150px;
-  float: right;
-}
-
-header.top-header > nav:nth-child(1) .nav-right a {
-  padding: 0 10px;
-}
-
-header.top-header > nav:nth-child(2) {
-  border-top: 1px soild rgba(0, 0, 0, 0.0975);
-  padding: 8px 0;
-  text-align: right;
-}
-
-header.top-header > nav:nth-child(2) > div {
-  max-width: 1010px;
-  margin: 0 auto;
-}
-
-form.form-inline-login {
-  font-size: 11px;
-}
-
-form.form-inline-login label {
-  margin-right: 5px;
-}
-
-form.form-inline-login input {
-  padding: 5px 8px;
-  font-size: 11px;
-  margin-right: 6px;
-}
-
-.message {
-  width: 50%;
-  position: fixed;
-  right: 3%;
-  top: 3%;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.0975);
-  font-size: 18px;
-  border-radius: 3px;
-  text-align: center;
-}
-
-.pagination-btn {
-  margin-top: 20px;
-  vertical-align: middle;
-}
-
-.container {
-  max-width: 1010px;
-  margin: 0 auto;
-  padding-top: 40px;
-}
-
-@media screen and (max-width: 700px) {
-  .container {
-    padding-top: 0px;
-  }
-}
+Backtrace:
+layout.scss:2
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:1325:in `rescue in block in find_encoding_error'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:1322:in `block in find_encoding_error'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:1321:in `each'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:1321:in `each_with_index'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:1321:in `find_encoding_error'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/util.rb:930:in `check_sass_encoding'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/engine.rb:436:in `check_encoding!'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/engine.rb:392:in `_to_tree'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/engine.rb:381:in `_render_with_sourcemap'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/engine.rb:298:in `render_with_sourcemap'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/exec/sass_scss.rb:391:in `run'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/exec/sass_scss.rb:63:in `process_result'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/exec/base.rb:52:in `parse'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/lib/sass/exec/base.rb:19:in `parse!'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/gems/sass-3.4.24/bin/scss:13:in `<top (required)>'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/bin/scss:23:in `load'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/bin/scss:23:in `<main>'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/bin/ruby_executable_hooks:15:in `eval'
+/Users/hwangseonjeong/.rvm/gems/ruby-2.2.0/bin/ruby_executable_hooks:15:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Error: Invalid US-ASCII character \"\xEA\"\A         on line 2 of layout.scss\A \A 1: \A 2: // 기본레이아웃 선언\A 3: @import 'variables';\A 4: $header-height: 83px;\A 5: $screen-tablet: 700px;\A 6: \A 7: "; }

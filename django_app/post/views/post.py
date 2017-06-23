@@ -57,6 +57,11 @@ def post_list(request):
     # GET 파라미터에서 page의 value값을 page_num 변수에 할당
     page_num = request.GET.get('page')
     # paginator의 페이지번호가 page_num인 포스트들을 posts변수에 할당
+    if page_num:
+        posts = Post.objects.filter(page_num * 9).order_by('-created_date')
+    elif not page_num:
+        pass
+
     try:
         posts = paginator.page(page_num)
     # page_num이 숫자형이 아닐 경우에는 1번째 페이지의 posts을 가져옴
@@ -221,17 +226,6 @@ def post_like_toggle(request, post_pk):
     # if next_:
     #     return redirect(next_)
     return redirect('post:post_detail', post_pk=post.pk)
-
-
-def follow_toggle(request, user):
-    me = request.user
-    following, follow_created = me.follow_relation.get_or_create(to_user=user)
-    if request.method == "POST":
-        if not follow_created:
-            following.delete()
-        return redirect('post:post_list')
-    else:
-        return render(request, 'post/post_list.html')
 
 
 def hashtag_post_list(request, tag_name):

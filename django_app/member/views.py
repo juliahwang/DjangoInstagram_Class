@@ -1,6 +1,9 @@
-from django.contrib.auth import authenticate, login as django_login, logout as django_logout, get_user_model
-from django.http import HttpResponse
+from django.contrib.auth import login as django_login, logout as django_logout, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
+
+from post.models import Post
 from .forms import LoginForm, SignupForm
 
 # Create your views here.
@@ -49,13 +52,13 @@ def login(request):
             next_ = request.GET.get('next')
             if next_:
                 return redirect(next_)
-            return redirect('post:post_list_original')
+            return redirect('post:post_list')
 
     # request.method가 GET이면 login 템플릿을 보여준다.
     else:
         # 만약 이미 로그인된 상태일 경우에는 post_list로 redirect
         if request.user.is_authenticated:
-            return redirect('post:post_list_original')
+            return redirect('post:post_list')
         # 아닐 경우 login.html을 render해서 리턴
         # LoginForm 인스턴스를 생성해서 context에 넘김
         form = LoginForm()
@@ -70,7 +73,7 @@ def login(request):
 def logout(request):
     # 로그아웃되면 post_list로 redirect
     django_logout(request)
-    return redirect('post:post_list_original')
+    return redirect('post:post_list')
 
 
 def signup(request):
@@ -118,3 +121,45 @@ def signup(request):
         'form': form,
     }
     return render(request, 'member/signup.html', context)
+
+
+def profile(request, user_pk=None):
+    # 1. user_pk에 해당하는 User를 cur_user키로 render
+    #   DoesNotExist Exception 발생시 raise Http404
+    #  GET 파라미터에 들어온 'page'값 처리
+    page = request.GET.get('page')
+    try:
+        page = int(page) if int(page) > 1 else 1
+    except ValueError:
+        page = 1
+    except Exception as e:
+        page = 1
+        print(e)
+    if user_pk:
+        user = User.objects.get(pk=user_pk)
+    else:
+        user = request.user
+
+    posts = Post.objects.filter(author=user).order_by('-created_date')[:]
+    context = {
+        'cur_user': user,
+    }
+    return render(request, 'member/profile.html', context)
+    # 2. member/profile.html 작성, 해당 user정보 보여주기
+    #   2-1. 해당 user의 followers, following 목록 보여주기
+    # 3. 현재 로그인한 user가 해당 유저(cur_user)를 팔로우하고 있는지 여부 보여주기
+    #   3-1. 팔로우중이면 '팔로우 해제'버튼을, 아니라면 '팔로우' 버튼 띄워주기
+    # 4 ~ def follow_toggle(request)뷰 생성
+
+
+@require_POST
+@login_required
+def follow_toggle_view(request, user_pk):
+    following_user = User.objects.get(pk=request.user.pk)
+    print(following_user)
+    followed_user = User.objects.get(pk=user_pk)
+    print(followed_user)
+    if request.method == "POST":
+        following_user.follow_toggle(followed_user)
+    return redirect('member:profile', user_pk=followed_user.pk)
+
