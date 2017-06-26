@@ -192,7 +192,7 @@ def post_delete(request, post_pk):
     post = get_object_or_404(Post, pk=post_pk)
     if request.method == "POST":
         post.delete()
-        return redirect('post:post_list_original')
+        return redirect('post:post_list')
     else:
         # Delete확인창 띄워주기
         context = {

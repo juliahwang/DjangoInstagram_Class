@@ -1,11 +1,41 @@
+.content-profile {
+  overflow: hidden; }
+  .content-profile .profile-left {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 7%;
+    display: inline-block;
+    height: 145px; }
+    .content-profile .profile-left img {
+      float: left;
+      border-radius: 50%;
+      width: 200px; }
+  .content-profile .profile-right {
+    margin-top: 0;
+    margin-left: 73px;
+    display: inline-block;
+    margin-bottom: 50px; }
+    .content-profile .profile-right .name-follow {
+      float: left; }
+    .content-profile .profile-right .cur_user-name {
+      font-size: 20px;
+      margin-bottom: 20px; }
+    .content-profile .profile-right .follow-btn {
+      margin-top: 18px;
+      margin-left: 15px; }
+    .content-profile .profile-right .user-info {
+      clear: both;
+      font-size: 16px; }
+
 ul.profile-photo-list {
+  padding-top: 40px;
   font-size: 0;
   margin-left: -10px;
   margin-right: -10px; }
   ul.profile-photo-list li {
     display: inline-block;
-    width: calc(100% / 3);
     box-sizing: border-box;
+    width: calc(100% / 3);
     padding: 10px; }
     ul.profile-photo-list li img {
       width: 100%; }

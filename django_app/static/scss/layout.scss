@@ -1,5 +1,4 @@
-
-// 기본레이아웃 선언
+// basic layout
 @import 'variables';
 $header-height: 83px;
 $screen-tablet: 700px;
@@ -11,14 +10,13 @@ header.top-header {
 }
 
 header.top-header > nav:nth-child(1) {
-  // 전체영역에서 1010만큼을 사용하도록 해야 라인이 양끝까지 이어진다.
+  // using 1010px from the global area makes the line go through all the way
   max-width: 1010px;
   margin: 0 auto;
   height: $header-height;
   padding: 0 10px;
-  // 각 div내의 a요소들은 height의 line-height를
-  // 같은 값으로 가져 수직중앙정렬되도록 함
-  // img요소는 vertical-align에 middle속성으로 수직중앙정렬
+  // every a tags have same line-height so vertically aligned
+  // img source should be aligned in the middle as vertical-align
   .nav-item {
     height: $header-height;
     line-height: $header-height;
@@ -33,7 +31,9 @@ header.top-header > nav:nth-child(1) {
       vertical-align: middle;
     }
   }
-
+  //.login-btn {
+  //  float: right;
+  //}
   .nav-left {
     float: left;
     margin-right: 20px;
@@ -61,8 +61,8 @@ header.top-header > nav:nth-child(1) {
   }
 }
 header.top-header > nav:nth-child(2) {
-  border-top: 1px soild $color-border;
-  padding: 8px 0;
+  //border-top: 1px soild $color-border;
+  padding: 10px 0;
   text-align: right;
 
   > div {
@@ -75,7 +75,7 @@ form.form-inline-login {
   font-size: 11px;
 
   label {
-    margin-right: 5px;
+    margin-right: 10px;
   }
   input {
     padding: 5px 8px;

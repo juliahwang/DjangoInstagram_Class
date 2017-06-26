@@ -2,4 +2,4 @@ from django.shortcuts import render, redirect
 
 
 def default(request):
-    return redirect('post:post_list_original')
+    return redirect('post:post_list')

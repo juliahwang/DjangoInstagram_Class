@@ -69,6 +69,10 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'member.User'
 LOGIN_URL = 'member:login'
 
+# Custom
+FACEBOOK_APP_ID = '359278334486847'
+FACEBOOK_SECRET_CODE = '49a96598e984ad9dc3086b394bbbade0'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -113,6 +117,7 @@ TEMPLATES = [
 
                 # Custom context processors
                 'member.context_processors.forms',
+                'utils.context_processors.facebook_info',
             ],
         },
     },

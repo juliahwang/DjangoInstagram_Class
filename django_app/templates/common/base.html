@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
     <link rel="stylesheet" href="{% static 'css/common.css' %}">
     <link rel="stylesheet" href="{% static 'css/post.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <title>Instagram</title>
 </head>
 <body>
@@ -36,13 +37,13 @@
           <a href="#">
             <img src="{% static 'images/icon_heart.png' %}" alt="">
           </a>
-          <a href="#">
+          <a href="{% url 'member:my_profile' %}">
             <img src="{% static 'images/icon_profile.png' %}" alt="">
           </a>
         </div>
       </nav>
       <nav>
-        <div>
+        <div class="login-btn">
           {% if request.user.is_authenticated %}
           <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}" class="btn">로그아웃</a></p>
           {% else %}
@@ -54,6 +55,8 @@
             {{ login_form }}
                 <!--폼에서 버튼은 만들어 주지 않는다.-->
               <button type="submit" class="btn">로그인</button>
+              <a href="https://www.facebook.com/v2.9/dialog/oauth?client_id={{ facebook_app_id }}&redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'member:facebook_login' %}" \
+                class="btn btn-block btn-primary">페이스북으로 로그인</a>
             </form>
             <!--회원가입 페이지로 가는 버튼은 GET요청, button type도 지정하지 않는다.-->
             <form action="{% url 'member:signup' %}" method="GET">

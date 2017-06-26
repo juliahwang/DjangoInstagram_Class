@@ -24,6 +24,9 @@
 {% endif %}
 </div>
 {% block content %}
+<div class="post-create-btn">
+    <a href="{% url 'post:post_create' %}" class="btn">글쓰기</a>
+</div>
 {% for post in posts %}
 {#    <!--<p>{{ post.photo }}</p>-->#}
 {#    <!--<p>{{ post.photo.url }}</p>-->#}

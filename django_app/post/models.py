@@ -59,6 +59,7 @@ class Post(models.Model):
         return '{}'.format(', '.join([i.username for i in self.like_users.all()]))
 
 
+
 class PostLike(models.Model):
     post = models.ForeignKey(Post)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)

@@ -1,13 +1,23 @@
-from django.contrib.auth import login as django_login, logout as django_logout, get_user_model
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.views.decorators.http import require_POST
+from pprint import pprint
 
-from post.models import Post
-from .forms import LoginForm, SignupForm
+from django.contrib import messages
+from django.contrib.auth import login as django_login, logout as django_logout, get_user_model
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+import requests
+
+from config import settings
+from ..forms import LoginForm, SignupForm
 
 # Create your views here.
 User = get_user_model()
+
+__all__ = (
+    'login',
+    'logout',
+    'signup',
+    'facebook_login',
+)
 
 
 def login(request):
@@ -108,7 +118,7 @@ def signup(request):
         if form.is_valid():
             user = form.create_user()
             django_login(request, user)
-            return redirect('post:post_list_original')
+            return redirect('post:post_list')
         else:
             context = {
                 'form': form,
@@ -123,43 +133,65 @@ def signup(request):
     return render(request, 'member/signup.html', context)
 
 
-def profile(request, user_pk=None):
-    # 1. user_pk에 해당하는 User를 cur_user키로 render
-    #   DoesNotExist Exception 발생시 raise Http404
-    #  GET 파라미터에 들어온 'page'값 처리
-    page = request.GET.get('page')
-    try:
-        page = int(page) if int(page) > 1 else 1
-    except ValueError:
-        page = 1
-    except Exception as e:
-        page = 1
-        print(e)
-    if user_pk:
-        user = User.objects.get(pk=user_pk)
-    else:
-        user = request.user
+def facebook_login(request):
+    # code= 값이 있을 때만 로그인을 허용
+    code = request.GET.get('code')
+    app_access_token = '{}|{}'.format(
+        settings.FACEBOOK_APP_ID,
+        settings.FACEBOOK_SECRET_CODE
+    )
 
-    posts = Post.objects.filter(author=user).order_by('-created_date')[:]
-    context = {
-        'cur_user': user,
-    }
-    return render(request, 'member/profile.html', context)
-    # 2. member/profile.html 작성, 해당 user정보 보여주기
-    #   2-1. 해당 user의 followers, following 목록 보여주기
-    # 3. 현재 로그인한 user가 해당 유저(cur_user)를 팔로우하고 있는지 여부 보여주기
-    #   3-1. 팔로우중이면 '팔로우 해제'버튼을, 아니라면 '팔로우' 버튼 띄워주기
-    # 4 ~ def follow_toggle(request)뷰 생성
+    def add_message_and_redirect_referer():
+        """
+        페이스북 로그인 오류 메세지를 request에 추가하고 이전 페이지로 redirect
+        :return: redirect
+        """
+        error_message_for_user = 'Facebook login error'
+        messages.error(request, error_message_for_user)
+        return redirect(request.META['HTTP_REFERER'])
 
+    def get_access_token(code):
+        # facebook_login view가 처음 호출될 때 'code' request GET parameter를 받음
+        # 액세스토큰의 코드교환할 url을 만들어준다.
+        url_access_token = 'https://graph.facebook.com/v2.9/oauth/access_token'
 
-@require_POST
-@login_required
-def follow_toggle_view(request, user_pk):
-    following_user = User.objects.get(pk=request.user.pk)
-    print(following_user)
-    followed_user = User.objects.get(pk=user_pk)
-    print(followed_user)
-    if request.method == "POST":
-        following_user.follow_toggle(followed_user)
-    return redirect('member:profile', user_pk=followed_user.pk)
+        redirect_uri = '{}://{}{}'.format(
+            request.scheme,
+            request.META['HTTP_HOST'],
+            request.path,
+        )
 
+        url_access_token_params = {
+            'client_id': settings.FACEBOOK_APP_ID,
+            'redirect_uri': redirect_uri,
+            'client_secret': settings.FACEBOOK_SECRET_CODE,
+            'code': code,
+        }
+        response = requests.get(url_access_token, params=url_access_token_params)
+
+        # 액세스 토큰 출력해보기
+        result = response.json()
+        if 'access_token' in result:
+            return result['access_token']
+        # 좀더 깨끗하게 갖고오는 pprint메서드 사용
+        elif 'error' in result:
+            raise Exception(result['error'])
+        else:
+            raise Exception('Unknown Error')
+
+        create_access_token = url_access_token + app_access_token + '&grant_type=client_credentials'
+        print('c_a_t:', create_access_token)
+
+        # {'access_token': 'EAAFGwwGAqT8BAND82fJLGNBAZAY9BMmiFL7zilPtTmZCZBBPFL5gEvHjkTGn4p9T3OGJ9A29oQrL6LW8EenN6GpirlWr7kYhZALVTFlQi0wkt8e8zzuiJyrCtH1u2UMdvh6ZB7jo1q2lDanZA9vdpFEZCRCOP1JviLjZAOUdEDpZCm67BbRRloOlB',
+        #  'expires_in': 5179068,
+        #  'token_type': 'bearer'}
+
+    # code 키값이 존재하지 않으면 로그인을 더이상 진행하지 않음.
+    if not code:
+        add_message_and_redirect_referer()
+        try:
+            access_token = get_access_token(code)
+        except Exception as e:
+            print(e)
+            add_message_and_redirect_referer()
+    return redirect('post:post_list')

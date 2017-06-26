@@ -1,18 +1,59 @@
 @import 'variables';
 
+.content-profile {
+  overflow: hidden;
+  .profile-left {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 7%;
+    display: inline-block;
+    height: 145px;
+    img {
+      float: left;
+      border-radius: 50%;
+      width: 200px;
+    }
+  }
+  .profile-right {
+    margin-top: 0;
+    margin-left: 73px;
+    display: inline-block;
+    margin-bottom: 50px;
+    .name-follow {
+      float: left;
+    }
+    .cur_user-name {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .follow-btn {
+      margin-top: 18px;
+      margin-left: 15px;
+      //> a {
+      //  margin-top: 18px;
+      //}
+    }
+    .user-info {
+      clear: both;
+      font-size: 16px;
+    }
+  }
+}
+
 ul.profile-photo-list {
+  padding-top: 40px;
   font-size: 0;
   margin-left: -10px;
   margin-right: -10px;
 
   li {
     display: inline-block;
-    width: calc(100% / 3);
     box-sizing: border-box;
+    width: calc(100% / 3);
     padding: 10px;
 
     img {
-      // the image width size should be 33.33%
+      // Each of image width size should be 33.33..%
       width: 100%;
     }
   }

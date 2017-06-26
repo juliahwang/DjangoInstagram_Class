@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from utils.fields import CustomImageField
 from django.db import models
 
 
@@ -27,6 +28,12 @@ class User(AbstractUser):
         null=True,
         unique=True
     )
+    img_profile = CustomImageField(
+        upload_to='user',
+        blank=True,
+        # 기본 설정 이미지를 세팅했지만 원하는 이미지를 추가로 넣어줄 수도 있다
+        # default_static_image='images/profile.png'
+    )
     ### self 상속
     # M2M필드는 비대칭적이지만 self 상속하게 되면 대칭이 된다(following)
     # 그리고 대칭관계라면 through로 참조, 역참조 관계를 알려주는 것이 아니라 방향성을 지정해줘야한다.
@@ -41,6 +48,9 @@ class User(AbstractUser):
     def __str__(self):
         # nickname이 None일 경우에는 username 반환
         return self.nickname or self.username
+
+    # def post_count(self):
+    #     return self.post_set.filter(author=self).count()
 
     def follow(self, user):
         # user가 User의 객체(형, 타입, =클래스)인지 검사
@@ -98,7 +108,7 @@ class User(AbstractUser):
     @property
     def followers(self):
         # 나를 follow중인 User QuerySet
-        relation = self.follow_relation.all()
+        relation = self.follower_relation.all()
         return User.objects.filter(pk__in=relation.values('from_user'))
 
 
@@ -114,7 +124,6 @@ class Relation(models.Model):
             self.from_user,
             self.to_user
         )
-
 
     # 한번 관계가 생긴 로우가 중복으로 만들어지지 않도록 제한
     class Meta:

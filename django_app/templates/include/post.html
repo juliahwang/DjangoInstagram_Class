@@ -1,14 +1,13 @@
 <!-- 하나의 모듈 템플릿 구현 -->
 {% load static %}
-<div class="post-create-btn">
-    <a href="{% url 'post:post_create' %}" class="btn">글쓰기</a>
-</div>
 <article id="post-{{ post.pk }}" class="post">
   <header>
     <div class="post-header-left">
       <img src="" alt="">
-      <span class="header-author">{{ post.author }}</span>
-  </div>
+      <a href="{% url 'member:profile' user_pk=post.author.pk %}">
+        <span class="header-author">{{ post.author }}</span>
+      </a>
+    </div>
   <div class="post-header-right">
 
   </div>

@@ -1,6 +1,8 @@
 .post-create-btn {
   max-width: 600px;
-  margin: 0 auto; }
+  margin: 0 auto;
+  padding-top: 20px;
+  padding-bottom: 50px; }
 
 article.post {
   max-width: 600px;
