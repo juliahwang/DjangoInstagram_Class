@@ -1,10 +1,8 @@
 from pprint import pprint
-
+import requests
 from django.contrib import messages
 from django.contrib.auth import login as django_login, logout as django_logout, get_user_model
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
-import requests
 
 from config import settings
 from ..forms import LoginForm, SignupForm
@@ -134,12 +132,30 @@ def signup(request):
 
 
 def facebook_login(request):
+    # facebook_login view가 처음 호출될 때
+    #   유저가 Facebook login dialog에서 로그인 후, 페이스북에서 우리 서비스(Consumer)쪽으로
+    #   GET 파라미터를 이용해 'code'값을 전달해줌 (전달받는 주소는 위의 uri_redirect)
     # code= 값이 있을 때만 로그인을 허용
     code = request.GET.get('code')
     app_access_token = '{}|{}'.format(
         settings.FACEBOOK_APP_ID,
         settings.FACEBOOK_SECRET_CODE
     )
+
+    # Exception을 상속받아 CustomException을 생성
+    class GetAccessTokenException(Exception):
+        def __init__(self, *args, **kwargs):
+            error_dict = args[0]['data']['error']
+            self.code = error_dict['code']
+            self.message = error_dict['message']
+            self.is_valid = error_dict['is_valid']
+            self.scopes = error_dict['scopes']
+
+    class DebugTokenException(Exception):
+        def __init__(self, *args, **kwargs):
+            error_dict = args[0]['data']['error']
+            self.code = error_dict['code']
+            self.message = error_dict['message']
 
     def add_message_and_redirect_referer():
         """
@@ -151,47 +167,102 @@ def facebook_login(request):
         return redirect(request.META['HTTP_REFERER'])
 
     def get_access_token(code):
+        """
+        code를 받아 액세스토큰 교환 URL에 요청 이후 해당 액세스토큰을 반환
+        오류 발생시 오류 메세지 리턴
+        :param code:
+        :return:
+        """
         # facebook_login view가 처음 호출될 때 'code' request GET parameter를 받음
         # 액세스토큰의 코드교환할 url을 만들어준다.
         url_access_token = 'https://graph.facebook.com/v2.9/oauth/access_token'
 
+        # 이전에 요청했던 redirect_uri와 같은 값을 만들어줌(access_token을 요청할 때 필요)
         redirect_uri = '{}://{}{}'.format(
             request.scheme,
             request.META['HTTP_HOST'],
             request.path,
         )
-
+        # 액세스토큰의 코드 교환 - uri 생성을 위한 params
         url_access_token_params = {
             'client_id': settings.FACEBOOK_APP_ID,
             'redirect_uri': redirect_uri,
             'client_secret': settings.FACEBOOK_SECRET_CODE,
             'code': code,
         }
+        # 해당 url에 get요청 후 결과(json형식)를 파이썬 object로 변환(result 변수)
         response = requests.get(url_access_token, params=url_access_token_params)
-
         # 액세스 토큰 출력해보기
         result = response.json()
-        if 'access_token' in result:
-            return result['access_token']
         # 좀더 깨끗하게 갖고오는 pprint메서드 사용
-        elif 'error' in result:
-            raise Exception(result['error'])
-        else:
-            raise Exception('Unknown Error')
-
-        create_access_token = url_access_token + app_access_token + '&grant_type=client_credentials'
-        print('c_a_t:', create_access_token)
-
+        pprint(result)
         # {'access_token': 'EAAFGwwGAqT8BAND82fJLGNBAZAY9BMmiFL7zilPtTmZCZBBPFL5gEvHjkTGn4p9T3OGJ9A29oQrL6LW8EenN6GpirlWr7kYhZALVTFlQi0wkt8e8zzuiJyrCtH1u2UMdvh6ZB7jo1q2lDanZA9vdpFEZCRCOP1JviLjZAOUdEDpZCm67BbRRloOlB',
         #  'expires_in': 5179068,
         #  'token_type': 'bearer'}
+        if 'access_token' in result:
+            return result['access_token']
+        elif 'error' in result:
+            raise GetAccessTokenException(result)
+        else:
+            raise Exception('Unknown Error')
+
+    def debug_token(token):
+        url_debug_token = "https://graph.facebook.com/debug_token"
+        url_debug_token_params = {
+            'input_token': token,
+            'access_token': app_access_token,
+        }
+        response = requests.get(url_debug_token, url_debug_token_params)
+        result = response.json()
+        if 'error' in result['data']:
+            raise DebugTokenException(result)
+        else:
+            return result
+
+    def get_user_info(user_id, token):
+        url_user_info = 'https://graph.facebook.com/v2.9/{user_id}'.format(
+            user_id=user_id
+        )
+        url_user_info_params = {
+            'access_token': token,
+            # 권한을 요청하지 않아도 오는 기본 정보
+            # 반드시 scope 내용을 적어줘야한다.
+            'fields': ','.join([
+                'id',
+                'name',
+                'first_name',
+                'last_name',
+                'picture',
+                'gender',
+            ])
+        }
+        response = requests.get(url_user_info, params=url_user_info_params)
+        result = response.json()
+        print(result)
 
     # code 키값이 존재하지 않으면 로그인을 더이상 진행하지 않음.
     if not code:
-        add_message_and_redirect_referer()
-        try:
-            access_token = get_access_token(code)
-        except Exception as e:
-            print(e)
-            add_message_and_redirect_referer()
-    return redirect('post:post_list')
+        return add_message_and_redirect_referer()
+    try:
+        # 이 view에 GET parameter로 전달된 code를 사용해서 access_token을 받아옴
+        # 성공시 access_token값을 가져옴
+        # 실패시 GetAccessTokenException이 발생
+        access_token = get_access_token(code)
+
+        # 위에서 받아온 access_token을 이용해 debug_token을 요청
+        # 성공시 토큰을 디버그한 결과 (user_id, scopes 등..)이 리턴
+        # 실패시 DebugTokenException이 발생
+        debug_result = debug_token(access_token)
+
+        # debug_result에 있는 user_id값을 이용해서 GraphAPI에 유저정보를 요청
+        user_info = get_user_info(user_id=debug_result['data']['user_id'], token=access_token)
+        print('user_info : ', user_info)
+    except GetAccessTokenException as e1:
+        print('AccessToken Error code : ', e1.code)
+        print('AccessToken Error msg : ', e1.message)
+        return add_message_and_redirect_referer()
+    except DebugTokenException as e2:
+        print('Debug Error code : ', e2.code)
+        print('Debug Error msg : ', e2.message)
+        return add_message_and_redirect_referer()
+
