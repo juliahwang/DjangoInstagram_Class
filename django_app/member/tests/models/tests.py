@@ -160,6 +160,3 @@ class UserModelManagerTest(TransactionTestCase):
         self.assertEqual(user.first_name, test_first_name)
         self.assertEqual(user.last_name, test_last_name)
         self.assertEqual(user.email, test_email)
-
-
-
