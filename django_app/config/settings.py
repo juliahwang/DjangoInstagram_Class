@@ -72,6 +72,8 @@ LOGIN_URL = 'member:login'
 # Custom
 FACEBOOK_APP_ID = '359278334486847'
 FACEBOOK_SECRET_CODE = '49a96598e984ad9dc3086b394bbbade0'
+YOUTUBE_KEY = 'AIzaSyCdRb55FLjS4Yf08_KHlKaK0dF4FnMrz3U'
+
 
 # Application definition
 
@@ -130,6 +132,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'instagram',
+        'USER': 'superadmin',
+        'PASSWORD': 'admin1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
@@ -165,5 +175,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-

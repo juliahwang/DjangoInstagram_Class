@@ -1,28 +1,6 @@
 {% extends 'common/base.html' %}
 {% load custom_tags %}
 
-
-<div class="test">{{ request.GET|query_string }}</div>
-
-{# 페이지네이션 버튼 추가 #}
-{# 이전페이지로 가는 링크 & 첫페이지로 가는 링크는 첫페이지에서는 보이지 않는다. #}
-<div class="pagination-btn">
-{% if posts.has_previous %}
-    <a href="{{ request.path }}?page=1" class="btn">처음</a>
-    <a href="{{ request.path }}?page={{ posts.previous_page_number }}" class="btn">이전 ({{ posts.previous_page_number }} 페이지)</a>
-    {# <p class="test">이전페이지 : {{ posts.previous_page_number }}</p>#}
-{% endif %}
-
-{# 현재 페이지 #}
-    <a href="{{ request.path }}?page={{ posts.number }}" class="btn">현재 ({{ posts.number }} 페이지)</a>
-
-{# 다음페이지로 가는 링크 & 끝페이지로 가는 링크는 다음페이지가 없을 경우 보이지 않게 해준다. #}
-{% if posts.has_next %}
-    <a href="{{ request.path }}?page={{ posts.next_page_number }}" class="btn">다음 ({{ posts.next_page_number }} 페이지)</a>
-    <a href="{{ request.path }}?page={{ posts.paginator.num_pages }}" class="btn">끝</a>
-    {#    <p class="test">다음 페이지: {{ posts.next_page_number }}</p>#}
-{% endif %}
-</div>
 {% block content %}
 <div class="post-create-btn">
     <a href="{% url 'post:post_create' %}" class="btn">글쓰기</a>
@@ -41,4 +19,25 @@
     <!--</div>-->
     {% include 'include/post.html' with type='list' %}
 {% endfor %}
+<div class="test">{{ request.GET|query_string }}</div>
+
+{# 페이지네이션 버튼 추가 #}
+{# 이전페이지로 가는 링크 & 첫페이지로 가는 링크는 첫페이지에서는 보이지 않는다. #}
+<div class="pagination-btn">
+    {% if posts.has_previous %}
+    <a href="{{ request.path }}?page=1" class="btn">처음</a>
+    <a href="{{ request.path }}?page={{ posts.previous_page_number }}" class="btn">이전 ({{ posts.previous_page_number }} 페이지)</a>
+    {# <p class="test">이전페이지 : {{ posts.previous_page_number }}</p>#}
+    {% endif %}
+
+    {# 현재 페이지 #}
+    <a href="{{ request.path }}?page={{ posts.number }}" class="btn">현재 ({{ posts.number }} 페이지)</a>
+
+    {# 다음페이지로 가는 링크 & 끝페이지로 가는 링크는 다음페이지가 없을 경우 보이지 않게 해준다. #}
+    {% if posts.has_next %}
+    <a href="{{ request.path }}?page={{ posts.next_page_number }}" class="btn">다음 ({{ posts.next_page_number }} 페이지)</a>
+    <a href="{{ request.path }}?page={{ posts.paginator.num_pages }}" class="btn">끝</a>
+    {#    <p class="test">다음 페이지: {{ posts.next_page_number }}</p>#}
+    {% endif %}
+</div>
 {% endblock %}

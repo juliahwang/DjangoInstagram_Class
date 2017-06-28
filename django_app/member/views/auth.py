@@ -1,7 +1,10 @@
+import re
 from pprint import pprint
 import requests
 from django.contrib import messages
 from django.contrib.auth import login as django_login, logout as django_logout, get_user_model
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.shortcuts import render, redirect
 
 from config import settings
@@ -195,7 +198,7 @@ def facebook_login(request):
         # 액세스 토큰 출력해보기
         result = response.json()
         # 좀더 깨끗하게 갖고오는 pprint메서드 사용
-        pprint(result)
+        # pprint(result)
         # {'access_token': 'EAAFGwwGAqT8BAND82fJLGNBAZAY9BMmiFL7zilPtTmZCZBBPFL5gEvHjkTGn4p9T3OGJ9A29oQrL6LW8EenN6GpirlWr7kYhZALVTFlQi0wkt8e8zzuiJyrCtH1u2UMdvh6ZB7jo1q2lDanZA9vdpFEZCRCOP1JviLjZAOUdEDpZCm67BbRRloOlB',
         #  'expires_in': 5179068,
         #  'token_type': 'bearer'}
@@ -238,7 +241,7 @@ def facebook_login(request):
         }
         response = requests.get(url_user_info, params=url_user_info_params)
         result = response.json()
-        print(result)
+        return result
 
     # code 키값이 존재하지 않으면 로그인을 더이상 진행하지 않음.
     if not code:
@@ -256,7 +259,13 @@ def facebook_login(request):
 
         # debug_result에 있는 user_id값을 이용해서 GraphAPI에 유저정보를 요청
         user_info = get_user_info(user_id=debug_result['data']['user_id'], token=access_token)
-        print('user_info : ', user_info)
+
+        # 모델에서 UserManager의 메서드를 사용하여 유저정보 가져온다.
+        user = User.objects.get_or_create_facebook_user(user_info)
+        # 유저를 로그인시킨다.
+        django_login(request, user)
+        return redirect(request.META['HTTP_REFERER'])
+
     except GetAccessTokenException as e1:
         print('AccessToken Error code : ', e1.code)
         print('AccessToken Error msg : ', e1.message)
@@ -265,4 +274,3 @@ def facebook_login(request):
         print('Debug Error code : ', e2.code)
         print('Debug Error msg : ', e2.message)
         return add_message_and_redirect_referer()
-

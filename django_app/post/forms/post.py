@@ -45,7 +45,7 @@ class PostForm(forms.ModelForm):
         # 생성된 instance의 author에 원하는 author를 넣어주면 된다
         # self.instance.author = author
         # comment등록을 위한 기본 instance를 anything으로 재정의
-        anything = super().save(**kwargs)
+        instance = super().save(**kwargs)
 
         # commit인수가 True이며 comment필드가 채워져 있을 경우 Comment 생성 로직을 진행
         # 해당 comment는 instance의 my_comment필드를 채워준다.
@@ -54,16 +54,16 @@ class PostForm(forms.ModelForm):
         comment_string = self.cleaned_data['comment']
         # comment가 채워져있을 경우
         if commit and comment_string:
-            if anything.my_comment:
-                anything.my_comment.content = comment_string
-                anything.my_comment.save()
+            if instance.my_comment:
+                instance.my_comment.content = comment_string
+                instance.my_comment.save()
             # my_comment가 없는 경우 Comment객체를 생성해서 my_comment O2O field에 할당
             else:
-                anything.my_comment = Comment.objects.create(
-                    post=anything,
-                    author=anything.author,
-                    content=comment_string,
-            )
-            anything.save()
+                instance.my_comment = Comment.objects.create(
+                    post=instance,
+                    author=instance.author,
+                    content=comment_string
+                )
+            instance.save()
         # ModelForm의 save()에서 반환해야하는 model의 instance 리턴
-        return anything
+        return instance

@@ -47,7 +47,7 @@ def profile(request, user_pk=None):
     }
     return render(request, 'member/profile.html', context)
     # 2. member/profile.html 작성, 해당 user정보 보여주기
-    #   2-1. 해당 user의 followers, following 목록 보여주기
+    #   2-1. 해당 user의 follower, following 목록 보여주기
     # 3. 현재 로그인한 user가 해당 유저(cur_user)를 팔로우하고 있는지 여부 보여주기
     #   3-1. 팔로우중이면 '팔로우 해제'버튼을, 아니라면 '팔로우' 버튼 띄워주기
     # 4 ~ def follow_toggle(request)뷰 생성

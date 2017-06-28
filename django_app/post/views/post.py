@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from post.decorators import post_owner
 from post.forms import CommentForm
 from post.forms import PostForm
-from post.models import Post, Tag
+from post.models import Post, Tag, Video, Comment
 
 __all__ = (
     'post_list_original',
@@ -145,7 +145,7 @@ def post_create(request):
             # Form 안에서 comment저장을 하기 위해 author를 인수로 할당하고
             # 원래 author를 추가로 저장하기 위해 설정했던 commit=False는 삭제
             post = form.save(author=request.user)
-            post.save()
+
 
             # PostForm에 comment가 전달되었을 경우 Comment객체 생성
             # comment_string = form.cleaned_data['comment']
@@ -160,7 +160,8 @@ def post_create(request):
                 'form': form,
             }
             return render(request, 'post/post_create.html', context)
-    form = PostForm()
+    else:
+        form = PostForm()
     context = {
         'form': form,
     }

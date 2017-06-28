@@ -16,6 +16,7 @@
     {% if type == 'list' %}
       <a href="{% url 'post:post_detail' post_pk=post.pk %}">
       <img src="{{ post.photo.url }}" alt="">
+      </a>
     {% else %}
         <img src="{{ post.photo.url }}" alt="">
     {% endif %}
@@ -42,7 +43,8 @@
         </div>
         <div class="btn-right">
           {% if user == post.author %}
-          <a href="{% url 'post:post_modify' post_pk=post.pk %}" class="btn">수정하기</a>
+            <a href="{% url 'post:post_modify' post_pk=post.pk %}" class="btn">수정하기</a>
+            <a href="{% url 'post:post_delete' post_pk=post.pk %}" class="btn">삭제하기</a>
           </form>
           {% endif %}
         </div>

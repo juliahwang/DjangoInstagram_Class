@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from utils.templatetags.custom_tags import query_string
 from post.decorators import comment_owner
 from post.forms import CommentForm
-from post.models import Post, Comment
+from ..models import Post, Comment
 
 __all__ = (
     'comment_create',

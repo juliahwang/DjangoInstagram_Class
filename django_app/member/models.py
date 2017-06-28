@@ -1,9 +1,61 @@
-from django.contrib.auth.models import AbstractUser
+import re
+
+import requests
+from django.contrib.auth.models import AbstractUser, UserManager as DefaultUserManager
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+
+from config import settings
 from utils.fields import CustomImageField
 from django.db import models
 
 
-# Create your models here.
+class UserManager(DefaultUserManager):
+    def get_or_create_facebook_user(self, user_info):
+        # 고유 username패턴을 만들어준다.
+        username = '{}_{}_{}'.format(
+            User.USER_TYPE_FACEBOOK,
+            settings.FACEBOOK_APP_ID,
+            user_info['id']
+        )
+        user, user_created = self.get_or_create(
+            username=username,
+            user_type=self.model.USER_TYPE_FACEBOOK,
+            defaults={
+                'last_name': user_info.get('last_name'),
+                'first_name': user_info.get('first_name'),
+                'email': user_info.get('email', ''),
+            }
+        )
+        # 유저가 새로 생성되었을 때만 이미지 파일을 불러옴.
+        # user_info에 'picture'의 value값이 있어야 다음 if의 실행문을 실행한다.
+        if user_created and user_info.get('picture'):
+            ### 메모리상에 (url로) 존재하던 이미지파일을 실제 파일로 서버에 저장하는 법
+            # 프로필 이미지 url 가져오기
+            url_picture = user_info['picture']['data']['url']
+
+            # 이미지파일 확장자 가져오는 정규표현식
+            p = re.compile(r'.*\.([^?]+)')
+            file_ext = re.search(p, url_picture).group(1)
+            file_name = '{}.{}'.format(
+                user.pk,
+                file_ext
+            )
+            # 이미지 파일을 임시저장할 파일객체
+            # delete=False 옵션을 주면 객체가 사라져도(id를 지워도) 파일이 지워지지 않는다.
+            temp_file = NamedTemporaryFile()
+
+            # 프로필 이미지 URL에 대한 get요청 (이미지 다운로드)
+            response = requests.get(url_picture)
+
+            # 요청결과를 temp_file에 기록
+            temp_file.write(response.content)
+
+            # ImageField의 save()메서드를 호출해서 해당 임시파일 객체를 주어진 이름의 파일로 저장
+            user.img_profile.save('profile.jpg', temp_file)
+        return user
+
+
 class User(AbstractUser):
     """
     동작
@@ -11,7 +63,7 @@ class User(AbstractUser):
         unfollow : 내가 다른사람에게 한 follow 취소
 
     속성
-        followers : 나를 follow 하고 있는 사람들
+        follower : 나를 follow 하고 있는 사람들
         follower : 나를 follow한 사람
         following : 내가 follow하고 있는 사람
         friend : 맞팔
@@ -23,6 +75,14 @@ class User(AbstractUser):
     # blank=True를 넣게 되면 2명 이상의 사용자가 닉네임을 입력하지 않을 때
     # "" 값을 비교해버리므로 입력하지 않으면 계속 에러가 난다
     # null=True로 하면 아예 없는 값이므로 비교자체가 불가능하다.
+    USER_TYPE_DJANGO = 'd'
+    USER_TYPE_FACEBOOK = 'f'
+    USER_TYPE_CHOICES = (
+        (USER_TYPE_DJANGO, 'Django'),
+        (USER_TYPE_FACEBOOK, 'Facebook'),
+    )
+    # 유저타입 기본은 Django, 페이스북 로그인시 USER_TYPE_FACEBOOK값을 갖도록 함.
+    user_type = models.CharField(max_length=1, choices=USER_TYPE_CHOICES, default=USER_TYPE_DJANGO)
     nickname = models.CharField(
         max_length=24,
         null=True,
@@ -44,6 +104,8 @@ class User(AbstractUser):
         through='Relation',
         symmetrical=False,
     )
+
+    objects = UserManager()
 
     def __str__(self):
         # nickname이 None일 경우에는 username 반환
@@ -75,7 +137,7 @@ class User(AbstractUser):
             to_user=user,
         ).delete()
 
-    def is_follow(self, user):
+    def is_following(self, user):
         # 해당 user를 내가 follow하고 있는지 bool 여부 반환
         return Relation.objects.filter(from_user=self, to_user=user).exists()
         # if status:
@@ -106,7 +168,7 @@ class User(AbstractUser):
         return User.objects.filter(pk__in=relation.values('to_user'))
 
     @property
-    def followers(self):
+    def follower(self):
         # 나를 follow중인 User QuerySet
         relation = self.follower_relation.all()
         return User.objects.filter(pk__in=relation.values('from_user'))
