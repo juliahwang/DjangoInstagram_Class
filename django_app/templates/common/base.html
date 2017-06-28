@@ -47,12 +47,12 @@
           {% if request.user.is_authenticated %}
           <p>{{ user }}가 로그인 중입니다. <a href="{% url 'member:logout' %}" class="btn">로그아웃</a></p>
           {% else %}
-            <form action="{% url 'member:login' %}" method="post">
+            <form action="{% url 'member:login' %}" method="post" class="form-inline-login">
                 {% csrf_token %}
                 <!--<input type="text" name="username" placeholder="아이디 ">-->
                 <!--<input type="password" name="password" placeholder="비밀번호 ">-->
             <!--동적으로 폼 생성하기-context_processors 사용-->
-            {{ login_form }}
+              {{ login_form }}
                 <!--폼에서 버튼은 만들어 주지 않는다.-->
               <button type="submit" class="btn">로그인</button>
               <a href="https://www.facebook.com/v2.9/dialog/oauth?client_id={{ facebook_app_id }}&scope=user_friends,public_profile,email&redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'member:facebook_login' %}" \

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from ..forms import UserEditForm
@@ -15,7 +16,16 @@ __all__ = (
 
 
 def profile(request, user_pk=None):
-    NUM_POSTS_PER_PAGE = 3
+    # 유저가 login하지 않고 user_pk도 주어지지않은 상태에서 profile에 접근하려는 경우
+    if not (request.user.is_authenticated and user_pk):
+        # next 파라미터를 저장(/member/profile/)하여 로그인페이지 url을 만들어 리다이렉트해준다.
+        login_url = reverse('member:login')
+        print(request.get_full_path())
+        redirect_url = login_url + '?next=' + request.get_full_path()
+        return redirect(redirect_url)
+        # http://localhost:8000/member/login/?next=/member/profile/
+
+    num_posts_per_page = 3
     # 1. user_pk에 해당하는 User를 cur_user키로 render
     #   DoesNotExist Exception 발생시 raise Http404
     #  GET 파라미터에 들어온 'page'값 처리
@@ -33,10 +43,10 @@ def profile(request, user_pk=None):
         user = request.user
 
     # page * 9만큼 게시물 리턴
-    posts = user.post_set.order_by('-created_date')[:page * NUM_POSTS_PER_PAGE]
+    posts = user.post_set.order_by('-created_date')[:page * num_posts_per_page]
     post_count = user.post_set.filter(author=user).count()
     # next_page = 현재 page에서 보여주는 Post개수보다 post_count가 클경우 전달받은 page + 1, 아니면 None
-    next_page = page + 1 if post_count > page * NUM_POSTS_PER_PAGE else None
+    next_page = page + 1 if post_count > page * num_posts_per_page else None
 
     context = {
         'cur_user': user,
